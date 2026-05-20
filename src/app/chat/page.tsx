@@ -554,6 +554,51 @@ export default function AgentTestPage() {
   );
 }
 
+/* ─── welcome ─── */
+
+function Welcome({ onPick, loading }: { onPick: (text: string) => void; loading: boolean }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "clamp(2rem, 8vw, 5rem)", paddingBottom: "2rem", gap: "clamp(1.5rem, 4vw, 2.5rem)" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ width: 52, height: 52, borderRadius: 16, background: T.gradient, boxShadow: T.gradientShadow, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
+          <Sparkles size={24} color="#fff" />
+        </div>
+        <h2 style={{ margin: 0, fontSize: "clamp(1.2rem, 3vw, 1.6rem)", fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>
+          How can I help?
+        </h2>
+        <p style={{ margin: "0.4rem 0 0", fontSize: "clamp(0.82rem, 2vw, 0.92rem)", color: T.text3 }}>
+          Ask anything about events, artists, or tickets.
+        </p>
+      </div>
+      <div className="agent-welcome-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.65rem", width: "100%", maxWidth: 560 }}>
+        {SUGGESTIONS.map(({ title, hint, prompt, Icon }) => (
+          <button
+            key={prompt}
+            type="button"
+            disabled={loading}
+            onClick={() => onPick(prompt)}
+            style={{
+              display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.25rem",
+              padding: "0.85rem 1rem", background: T.surface, border: `1px solid ${T.border}`,
+              borderRadius: 12, cursor: loading ? "not-allowed" : "pointer", textAlign: "left",
+              boxShadow: T.tier1, transition: "border-color 0.15s, box-shadow 0.15s",
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.boxShadow = T.tier2 ?? T.tier1; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = T.tier1; }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <Icon size={14} color={T.accent} />
+              <span style={{ fontSize: "0.82rem", fontWeight: 600, color: T.text }}>{title}</span>
+            </div>
+            <span style={{ fontSize: "0.75rem", color: T.text3 }}>{hint}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── topbar ─── */
 
 function TopBar({
@@ -889,5 +934,504 @@ function UsageFooter() {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ─── message bubble ─── */
+
+function MessageBubble({
+  message,
+  onMemorise,
+  onEdit,
+}: {
+  message: Message;
+  onMemorise?: () => void;
+  onEdit?: (newText: string) => void;
+}) {
+  const isUser = message.role === "user";
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(message.content);
+  const [actionsVisible, setActionsVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(editText.length, editText.length);
+    }
+  }, [editing]);
+
+  function commitEdit() {
+    const trimmed = editText.trim();
+    if (trimmed && trimmed !== message.content && onEdit) onEdit(trimmed);
+    setEditing(false);
+  }
+
+  function copy() {
+    navigator.clipboard.writeText(message.content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+
+  const hasTool = (message.toolCalls?.length ?? 0) > 0 || (message.toolResults?.length ?? 0) > 0;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setActionsVisible(true)}
+      onMouseLeave={() => setActionsVisible(false)}
+      style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: isUser ? "flex-end" : "flex-start" }}
+    >
+      {hasTool && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", width: "100%", maxWidth: 560 }}>
+          {message.toolCalls?.map((tc, i) => (
+            <div key={i} style={{
+              display: "flex", alignItems: "center", gap: "0.45rem",
+              padding: "0.4rem 0.7rem", background: T.surface, border: `1px solid ${T.border}`,
+              borderRadius: 9, boxShadow: T.tier1,
+            }}>
+              <Wrench size={12} color={T.text3} />
+              <span style={{ fontSize: "0.75rem", color: T.text3, fontWeight: 500 }}>{toolLabel(tc.toolName)}</span>
+            </div>
+          ))}
+          {message.toolResults?.map((tr, i) => (
+            <div key={i} style={{
+              display: "flex", alignItems: "center", gap: "0.45rem",
+              padding: "0.4rem 0.7rem", background: T.successTint, border: `1px solid ${T.success}22`,
+              borderRadius: 9,
+            }}>
+              <CircleCheck size={12} color={T.success} />
+              <span style={{ fontSize: "0.75rem", color: T.text3, fontWeight: 500 }}>{toolLabel(tr.toolName)} done</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {message.content && (
+        <div
+          data-user-bubble={isUser ? "" : undefined}
+          style={{
+            position: "relative",
+            maxWidth: isUser ? "78%" : "100%",
+            padding: isUser ? "0.6rem 0.9rem" : "0.05rem 0",
+            background: isUser ? T.gradient : "transparent",
+            boxShadow: isUser ? T.gradientShadow : "none",
+            borderRadius: isUser ? 16 : 0,
+            color: isUser ? "#fff" : T.text,
+            fontSize: "clamp(0.875rem, 2vw, 0.9375rem)",
+            lineHeight: 1.65,
+          }}
+        >
+          {editing ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <textarea
+                ref={textareaRef}
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commitEdit(); }
+                  if (e.key === "Escape") setEditing(false);
+                }}
+                style={{
+                  width: "100%", minHeight: 80, resize: "vertical", padding: "0.5rem 0.7rem",
+                  background: "rgba(0,0,0,0.18)", border: "1px solid rgba(255,255,255,0.25)",
+                  borderRadius: 10, color: "#fff", fontSize: "inherit", fontFamily: "inherit",
+                  lineHeight: 1.6,
+                }}
+              />
+              <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
+                <button type="button" onClick={() => setEditing(false)} style={{ ...actionPillStyle, background: "rgba(0,0,0,0.2)", color: "rgba(255,255,255,0.7)" }}>Cancel</button>
+                <button type="button" onClick={commitEdit} style={{ ...actionPillStyle, background: "rgba(255,255,255,0.18)", color: "#fff" }}>Send</button>
+              </div>
+            </div>
+          ) : (
+            isUser ? (
+              <span style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{message.content}</span>
+            ) : (
+              <Markdown source={message.content} />
+            )
+          )}
+        </div>
+      )}
+
+      {!editing && (
+        <div style={{
+          display: "flex", gap: "0.3rem", opacity: actionsVisible ? 1 : 0,
+          transition: "opacity 0.15s", pointerEvents: actionsVisible ? "auto" : "none",
+          justifyContent: isUser ? "flex-end" : "flex-start",
+        }}>
+          <button type="button" onClick={copy} title="Copy" style={actionPillStyle}
+            onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}>
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+          </button>
+          {onEdit && (
+            <button type="button" onClick={() => { setEditText(message.content); setEditing(true); }} title="Edit" style={actionPillStyle}
+              onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}>
+              <Pencil size={12} />
+            </button>
+          )}
+          {onMemorise && (
+            <button type="button" onClick={onMemorise} title="Save to memory" style={actionPillStyle}
+              onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}>
+              <BookmarkPlus size={12} />
+            </button>
+          )}
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+/* ─── thinking indicator ─── */
+
+function ThinkingIndicator({ activeTool }: { activeTool: string | null }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}
+    >
+      <div style={{ display: "flex", gap: "0.28rem", alignItems: "center" }}>
+        {[0, 0.18, 0.36].map((delay) => (
+          <span key={delay} style={{
+            width: 7, height: 7, borderRadius: "50%", background: T.accent,
+            display: "inline-block",
+            animation: `agent-dot-bounce 1.2s ${delay}s ease-in-out infinite`,
+          }} />
+        ))}
+      </div>
+      {activeTool && (
+        <span style={{ fontSize: "0.75rem", color: T.text3, fontWeight: 500 }}>
+          {toolLabel(activeTool)}…
+        </span>
+      )}
+      <style>{`
+        @keyframes agent-dot-bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+          40% { transform: translateY(-5px); opacity: 1; }
+        }
+      `}</style>
+    </motion.div>
+  );
+}
+
+/* ─── composer ─── */
+
+function Composer({
+  value, onChange, onSubmit, onKeyDown, onStop, loading, error, onClearError, textareaRef, memoryCounts,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onStop: () => void;
+  loading: boolean;
+  error: string | null;
+  onClearError: () => void;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  memoryCounts: Record<string, number>;
+}) {
+  const totalMemories = Object.values(memoryCounts).reduce((a, b) => a + b, 0);
+
+  return (
+    <div style={{
+      flexShrink: 0, padding: "0.75rem clamp(0.85rem, 3vw, 2.25rem) calc(0.75rem + env(safe-area-inset-bottom, 0px))",
+      background: T.bg, borderTop: `1px solid ${T.border}`,
+    }}>
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+          style={{
+            display: "flex", alignItems: "center", gap: "0.5rem",
+            padding: "0.5rem 0.75rem", marginBottom: "0.55rem",
+            background: T.dangerTint, border: `1px solid ${T.danger}33`,
+            borderRadius: 10, fontSize: "0.8rem", color: T.danger,
+          }}
+        >
+          <CircleAlert size={14} />
+          <span style={{ flex: 1 }}>{error}</span>
+          <button type="button" onClick={onClearError} style={{ background: "none", border: "none", cursor: "pointer", color: T.danger, padding: 0, display: "flex" }}>
+            <X size={14} />
+          </button>
+        </motion.div>
+      )}
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <div style={{
+          display: "flex", alignItems: "flex-end", gap: "0.5rem",
+          background: T.surface, border: `1px solid ${T.border}`,
+          borderRadius: 14, padding: "0.55rem 0.55rem 0.55rem 0.9rem",
+          boxShadow: T.tier1, transition: "border-color 0.15s",
+        }}>
+          <textarea
+            ref={textareaRef}
+            className="agent-input"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={onKeyDown}
+            placeholder="Ask about events, artists, or tickets…"
+            rows={1}
+            disabled={loading}
+            style={{
+              flex: 1, resize: "none", border: "none", background: "transparent",
+              fontSize: "clamp(0.875rem, 2vw, 0.9375rem)", lineHeight: 1.6, color: T.text,
+              fontFamily: "inherit", minHeight: 28, maxHeight: 340, overflowY: "auto",
+              outline: "none", padding: 0,
+            }}
+          />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexShrink: 0 }}>
+            {totalMemories > 0 && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: "0.25rem",
+                fontSize: "0.7rem", color: T.text3, fontWeight: 600,
+                padding: "0.15rem 0.4rem", background: T.accentTint, borderRadius: 6,
+              }}>
+                <Brain size={10} color={T.accent} />
+                {totalMemories}
+              </span>
+            )}
+            {loading ? (
+              <button
+                type="button" onClick={onStop}
+                aria-label="Stop generation"
+                style={{
+                  width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: T.dangerTint, border: `1px solid ${T.danger}33`,
+                  borderRadius: 10, cursor: "pointer", color: T.danger, flexShrink: 0,
+                }}
+              >
+                <X size={16} strokeWidth={2.5} />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!value.trim()}
+                aria-label="Send message"
+                style={{
+                  width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: value.trim() ? T.gradient : T.surface2,
+                  boxShadow: value.trim() ? T.gradientShadow : "none",
+                  border: value.trim() ? "none" : `1px solid ${T.border}`,
+                  borderRadius: 10, cursor: value.trim() ? "pointer" : "not-allowed",
+                  color: value.trim() ? "#fff" : T.text3, flexShrink: 0,
+                  transition: "background 0.18s, box-shadow 0.18s",
+                }}
+              >
+                <ArrowUp size={16} strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* ─── memory drawer ─── */
+
+function MemoryDrawer({
+  memories, isMobile, onClose, onReplaySavedView, onDeleteMemory, onOpenMemory, onNewMemory,
+}: {
+  memories: Memory[];
+  isMobile: boolean;
+  onClose: () => void;
+  onReplaySavedView: (m: Memory) => void;
+  onDeleteMemory: (id: string) => void;
+  onOpenMemory: (m: Memory) => void;
+  onNewMemory: () => void;
+}) {
+  const kindLabel: Record<string, string> = { preference: "Preference", watch: "Watch", "saved-view": "Saved View", note: "Note" };
+  const kindIcon: Record<string, React.ReactNode> = {
+    preference: <Settings2 size={12} />,
+    watch: <Eye size={12} />,
+    "saved-view": <Bookmark size={12} />,
+    note: <StickyNote size={12} />,
+  };
+
+  return (
+    <motion.aside
+      key="memory-drawer"
+      initial={{ x: isMobile ? "100%" : 20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: isMobile ? "100%" : 20, opacity: 0 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        position: "fixed", top: 0, right: 0, bottom: 0,
+        width: isMobile ? "min(88vw, 340px)" : 300,
+        background: T.surface, borderLeft: `1px solid ${T.border}`,
+        boxShadow: "-8px 0 32px -8px rgba(0,0,0,0.12)",
+        display: "flex", flexDirection: "column", zIndex: 60,
+        overflowY: "auto",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", padding: "1rem 1rem 0.75rem", borderBottom: `1px solid ${T.border}`, gap: "0.5rem" }}>
+        <Brain size={16} color={T.accent} />
+        <span style={{ flex: 1, fontWeight: 700, fontSize: "0.9rem", color: T.text }}>Memory</span>
+        <button type="button" onClick={onNewMemory} title="Add memory" style={{ ...actionPillStyle }}>
+          <Plus size={12} /> Add
+        </button>
+        <button type="button" onClick={onClose} aria-label="Close memory drawer" style={{ background: "none", border: "none", cursor: "pointer", color: T.text3, padding: 4, display: "flex" }}>
+          <X size={18} />
+        </button>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem" }}>
+        {memories.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "2rem 1rem", color: T.text4, fontSize: "0.82rem" }}>
+            No memories yet. Save something to remember it across chats.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {memories.map((m) => (
+              <div key={m.id} style={{
+                padding: "0.65rem 0.75rem", background: T.bg, borderRadius: 10,
+                border: `1px solid ${T.border}`, display: "flex", flexDirection: "column", gap: "0.3rem",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <span style={{ color: T.accent }}>{kindIcon[m.kind]}</span>
+                  <span style={{ fontSize: "0.68rem", color: T.text3, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{kindLabel[m.kind] ?? m.kind}</span>
+                  <span style={{ flex: 1 }} />
+                  <span style={{ fontSize: "0.65rem", color: T.text4 }}>{relTime(m.updatedAt)}</span>
+                </div>
+                <p style={{ margin: 0, fontSize: "0.8rem", color: T.text, fontWeight: 600, lineHeight: 1.35 }}>{m.name}</p>
+                {m.body && <p style={{ margin: 0, fontSize: "0.75rem", color: T.text3, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{m.body}</p>}
+                <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.25rem" }}>
+                  <button type="button" onClick={() => onOpenMemory(m)} style={actionPillStyle} onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}><Pencil size={10} /> Edit</button>
+                  {m.kind === "saved-view" && <button type="button" onClick={() => onReplaySavedView(m)} style={actionPillStyle} onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}><Eye size={10} /> Replay</button>}
+                  <button type="button" onClick={() => onDeleteMemory(m.id)} style={{ ...actionPillStyle, marginLeft: "auto" }} onMouseEnter={(e) => { e.currentTarget.style.color = T.danger; e.currentTarget.style.transform = "translateY(-1px)"; }} onMouseLeave={actionPillHoverOut}><Trash2 size={10} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.aside>
+  );
+}
+
+/* ─── memory dialog ─── */
+
+function MemoryDialog({
+  draft, editingId, onChange, onClose, onSubmit, onUpdate, onDelete, onReplay, currentMemory,
+}: {
+  draft: MemoryInput | null;
+  editingId: string | null;
+  onChange: (v: MemoryInput) => void;
+  onClose: () => void;
+  onSubmit: (input: MemoryInput) => void;
+  onUpdate: (id: string, patch: MemoryInput) => void;
+  onDelete: (id: string) => void;
+  onReplay: (m: Memory) => void;
+  currentMemory: Memory | null;
+}) {
+  if (!draft) return null;
+  const isEditing = Boolean(editingId);
+  const kinds: MemoryKind[] = ["preference", "watch", "saved-view", "note"];
+  const kindLabel: Record<MemoryKind, string> = { preference: "Preference", watch: "Watch", "saved-view": "Saved View", note: "Note" };
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!draft || !draft.name.trim()) return;
+    if (isEditing && editingId) onUpdate(editingId, draft);
+    else onSubmit(draft);
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ scale: 0.96, opacity: 0, y: 8 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.96, opacity: 0, y: 8 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        style={{ background: T.surface, borderRadius: 16, border: `1px solid ${T.border}`, boxShadow: "0 24px 64px -12px rgba(0,0,0,0.22)", width: "100%", maxWidth: 440, overflow: "hidden" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "1rem 1rem 0.75rem", borderBottom: `1px solid ${T.border}` }}>
+          <Brain size={16} color={T.accent} />
+          <span style={{ flex: 1, fontWeight: 700, fontSize: "0.9rem", color: T.text }}>{isEditing ? "Edit memory" : "Save to memory"}</span>
+          <button type="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: T.text3, padding: 4, display: "flex" }}><X size={18} /></button>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem", padding: "1rem" }}>
+          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap" }}>
+            {kinds.map((k) => (
+              <button
+                key={k} type="button"
+                onClick={() => onChange({ ...draft, kind: k })}
+                style={{
+                  ...actionPillStyle,
+                  background: draft.kind === k ? T.accentTint : T.surface2,
+                  color: draft.kind === k ? T.accent : T.text3,
+                  border: draft.kind === k ? `1px solid ${T.accent}33` : "none",
+                }}
+              >
+                {kindLabel[k]}
+              </button>
+            ))}
+          </div>
+          <input
+            autoFocus
+            type="text"
+            placeholder="Name"
+            value={draft.name}
+            onChange={(e) => onChange({ ...draft, name: e.target.value })}
+            style={{
+              padding: "0.55rem 0.75rem", background: T.bg, border: `1px solid ${T.border}`,
+              borderRadius: 10, fontSize: "0.875rem", color: T.text, fontFamily: "inherit", outline: "none",
+            }}
+          />
+          <textarea
+            placeholder="Details (optional)"
+            value={draft.body}
+            onChange={(e) => onChange({ ...draft, body: e.target.value })}
+            rows={4}
+            style={{
+              padding: "0.55rem 0.75rem", background: T.bg, border: `1px solid ${T.border}`,
+              borderRadius: 10, fontSize: "0.875rem", color: T.text, fontFamily: "inherit",
+              resize: "vertical", outline: "none", lineHeight: 1.6,
+            }}
+          />
+          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", gap: "0.35rem" }}>
+              {isEditing && editingId && (
+                <button type="button" onClick={() => onDelete(editingId)} style={{ ...actionPillStyle, color: T.danger }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = T.danger; }} onMouseLeave={actionPillHoverOut}>
+                  <Trash2 size={12} /> Delete
+                </button>
+              )}
+              {isEditing && currentMemory?.kind === "saved-view" && (
+                <button type="button" onClick={() => { onClose(); onReplay(currentMemory); }} style={actionPillStyle}
+                  onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}>
+                  <Eye size={12} /> Replay
+                </button>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: "0.35rem" }}>
+              <button type="button" onClick={onClose} style={actionPillStyle} onMouseEnter={actionPillHoverIn} onMouseLeave={actionPillHoverOut}>Cancel</button>
+              <button
+                type="submit"
+                disabled={!draft.name.trim()}
+                style={{
+                  ...actionPillStyle,
+                  background: draft.name.trim() ? T.gradient : T.surface2,
+                  color: draft.name.trim() ? "#fff" : T.text3,
+                  boxShadow: draft.name.trim() ? T.gradientShadow : "none",
+                  cursor: draft.name.trim() ? "pointer" : "not-allowed",
+                }}
+              >
+                {isEditing ? "Update" : "Save"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
   );
 }
