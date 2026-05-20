@@ -1,0 +1,102 @@
+[
+  {
+    "id": "s1",
+    "name": "Aïcha Kouyaté",
+    "genre": ["Afrobeats", "Soul"],
+    "bio": "Senegalese-born vocalist whose voice carries the warm dust of Dakar and the cool salt of the Atlantic. She blends sabar rhythms with lush soul arrangements, filling every stage with an irresistible sway. Her 2025 debut album Maree Dorée earned three West African Music Award nominations.",
+    "photo": "/images/singers/aicha-kouyate.jpg",
+    "nationality": "Senegalese",
+    "eventIds": ["e1", "e3", "e9"],
+    "socialLinks": { "instagram": "@aichakouyate", "spotify": "aicha-kouyate" }
+  },
+  {
+    "id": "s2",
+    "name": "Mateo Rivera",
+    "genre": ["Cumbia", "Reggae"],
+    "bio": "Cartagena-raised multi-instrumentalist who fuses the syncopated pulse of coastal Colombian cumbia with roots reggae bass lines. His live sets feature a rotating cast of percussionists and always end with the crowd dancing barefoot. Mateo has toured across Latin America, the Caribbean, and now Europe.",
+    "photo": "/images/singers/mateo-rivera.jpg",
+    "nationality": "Colombian",
+    "eventIds": ["e1", "e8", "e11"],
+    "socialLinks": { "instagram": "@mateoriveramusic", "spotify": "mateo-rivera" }
+  },
+  {
+    "id": "s3",
+    "name": "Yuki Tanaka",
+    "genre": ["Electronic", "J-Pop"],
+    "bio": "Tokyo-born producer and vocalist who constructs shimmering electronic soundscapes layered beneath crystalline pop melodies. Yuki's live shows are a spectacle of generative visuals and real-time synthesis, blurring the line between DJ set and concert. She is the first Japanese artist to headline the Ibiza Digital Summer Festival.",
+    "photo": "/images/singers/yuki-tanaka.jpg",
+    "nationality": "Japanese",
+    "eventIds": ["e2", "e6", "e10"],
+    "socialLinks": { "instagram": "@yukitanaka_music", "spotify": "yuki-tanaka" }
+  },
+  {
+    "id": "s4",
+    "name": "Kofi Acheampong",
+    "genre": ["Afrobeats"],
+    "bio": "Accra's finest export, Kofi crafts high-energy Afrobeats anthems that have topped charts from Lagos to London. His falsetto glides effortlessly over dense, layered percussion and bright guitar hooks. A tireless performer, he once played three separate festivals on two continents in a single weekend.",
+    "photo": "/images/singers/kofi-acheampong.jpg",
+    "nationality": "Ghanaian",
+    "eventIds": ["e3", "e8"],
+    "socialLinks": { "instagram": "@kofiacheampong", "spotify": "kofi-acheampong" }
+  },
+  {
+    "id": "s5",
+    "name": "Lucia Fernandez",
+    "genre": ["Bossa Nova", "Jazz"],
+    "bio": "Rio-born guitarist and songwriter whose bossa nova phrasing is so precise it sounds like a conversation between her fingers and the strings. She studied at the Berklee College of Music and returned to Brazil steeped in jazz harmony, weaving modal chord changes through classic samba structures. Her evening sets pair perfectly with a caipirinha and a sea breeze.",
+    "photo": "/images/singers/lucia-fernandez.jpg",
+    "nationality": "Brazilian",
+    "eventIds": ["e2", "e7", "e10"],
+    "socialLinks": { "instagram": "@luciafernandez_bossa", "spotify": "lucia-fernandez" }
+  },
+  {
+    "id": "s6",
+    "name": "Darius White",
+    "genre": ["R&B", "Soul"],
+    "bio": "Detroit-raised, Los Angeles-polished, Darius White delivers velvet-smooth R&B that pays homage to Motown while charting its own modern course. His baritone is the kind that makes audiences instinctively close their eyes. After four years as a session vocalist for major label releases, he finally stepped into the spotlight with his 2024 EP Shoreline.",
+    "photo": "/images/singers/darius-white.jpg",
+    "nationality": "American",
+    "eventIds": ["e5", "e9"],
+    "socialLinks": { "instagram": "@dariuswhitemusic", "spotify": "darius-white" }
+  },
+  {
+    "id": "s7",
+    "name": "Amara Diallo",
+    "genre": ["Reggae"],
+    "bio": "Born in Conakry and raised on a diet of Bob Marley cassettes and kora melodies, Amara Diallo brings a distinctly West African warmth to reggae. His songs are unhurried, deeply grooved, and packed with lyrical wisdom about belonging and the sea. He performs barefoot as a matter of principle.",
+    "photo": "/images/singers/amara-diallo.jpg",
+    "nationality": "Guinean",
+    "eventIds": ["e3", "e4", "e12"],
+    "socialLinks": { "instagram": "@amaradiallomusic", "spotify": "amara-diallo" }
+  },
+  {
+    "id": "s8",
+    "name": "Kai Nakashima",
+    "genre": ["Surf Rock"],
+    "bio": "Japanese-Australian guitarist who grew up split between Osaka apartment blocks and Sydney's Northern Beaches, and whose music sounds exactly like that biography. Kai's surf rock bends tremolo-drenched riffs through post-rock dynamics, hitting swells of noise before dropping into sparkling, melodic calm. An absolute force of energy live.",
+    "photo": "/images/singers/kai-nakashima.jpg",
+    "nationality": "Japanese-Australian",
+    "eventIds": ["e8", "e11"],
+    "socialLinks": { "instagram": "@kai_nakashima_surfs", "spotify": "kai-nakashima" }
+  },
+  {
+    "id": "s9",
+    "name": "Elena Moreau",
+    "genre": ["Jazz", "Pop"],
+    "bio": "Paris-bred, globally minded, Elena Moreau writes jazz-inflected pop songs with the narrative precision of a short-story writer. Her piano arrangements pull from Bill Evans and Radiohead in equal measure, and her stage presence is quietly magnetic. She has headlined Le Caveau de la Huchette and supported major pop acts across Europe.",
+    "photo": "/images/singers/elena-moreau.jpg",
+    "nationality": "French",
+    "eventIds": ["e5", "e6"],
+    "socialLinks": { "instagram": "@elenamoreau_music", "spotify": "elena-moreau" }
+  },
+  {
+    "id": "s10",
+    "name": "Nora Osei",
+    "genre": ["Soul", "Pop"],
+    "bio": "London-born to Ghanaian parents, Nora Osei's voice is a force of nature wrapped in velvet. She writes hook-forward soul-pop that sits comfortably alongside Lizzo and Ari Lennox while carrying a distinctly British wit in the lyrics. Her 2025 single Golden Tide went viral after a beachside busking video racked up 40 million views.",
+    "photo": "/images/singers/nora-osei.jpg",
+    "nationality": "British-Ghanaian",
+    "eventIds": ["e7", "e9", "e12"],
+    "socialLinks": { "instagram": "@noraosei", "spotify": "nora-osei" }
+  }
+]

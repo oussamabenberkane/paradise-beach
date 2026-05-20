@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --surface-2: #FFF3E6;
+  --surface-3: #FFE8CC;
+  --border: rgba(26, 18, 9, 0.10);
+  --border-strong: rgba(26, 18, 9, 0.20);
+
+  --text: #1A1209;
+  --text-2: #3D2B1F;
+  --text-3: #7A5C45;
+  --text-4: #A68B6E;
+
+  --accent: #E8580C;
+  --accent-2: #C94008;
+  --accent-tint: rgba(232, 88, 12, 0.10);
+  --accent-tint-2: rgba(232, 88, 12, 0.16);
+
+  --success: #2D9E5F;
+  --success-tint: rgba(45, 158, 95, 0.12);
+  --warn: #F5A623;
+  --warn-tint: rgba(245, 166, 35, 0.12);
+  --danger: #E53935;
+  --danger-tint: rgba(229, 57, 53, 0.12);
+  --info: #1E88E5;
+  --info-tint: rgba(30, 136, 229, 0.12);
+
+  --tier-1: 0 1px 2px rgba(26, 18, 9, 0.06), 0 4px 12px rgba(26, 18, 9, 0.08);
+  --tier-2: 0 4px 16px rgba(26, 18, 9, 0.10), 0 12px 40px rgba(26, 18, 9, 0.14);
+  --tier-3: 0 8px 32px rgba(26, 18, 9, 0.13), 0 24px 64px rgba(26, 18, 9, 0.16);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans, Manrope, sans-serif);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

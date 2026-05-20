@@ -1,0 +1,20 @@
+[     188ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[     248ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   70383ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   70451ms] [LOG] [Fast Refresh] done in 53ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   79906ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   80061ms] [LOG] [Fast Refresh] done in 52ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   80341ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[   80376ms] [LOG] [Fast Refresh] done in 137ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  123417ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  123502ms] [LOG] [Fast Refresh] done in 41ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  123624ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  123643ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  138579ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  138606ms] [LOG] [Fast Refresh] done in 18ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  154644ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  154689ms] [LOG] [Fast Refresh] done in 28ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  159708ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  159772ms] [LOG] [Fast Refresh] done in 15ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  164986ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477
+[  165034ms] [LOG] [Fast Refresh] done in 28ms @ http://localhost:3000/_next/static/chunks/13hn_next_dist_09ryeuj._.js:2477

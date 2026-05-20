@@ -1,0 +1,296 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - generic [ref=e10]:
+          - generic [ref=e11]: Paradise Beach
+          - generic [ref=e12]: Beach Venue
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - img [ref=e15]
+          - generic [ref=e20]: Dashboard
+        - link "Events" [ref=e21] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e22]
+          - generic [ref=e24]: Events
+        - link "Singers" [ref=e25] [cursor=pointer]:
+          - /url: /singers
+          - img [ref=e26]
+          - generic [ref=e30]: Singers
+        - link "Tickets" [ref=e31] [cursor=pointer]:
+          - /url: /tickets
+          - img [ref=e32]
+          - generic [ref=e34]: Tickets
+        - link "Chat" [ref=e35] [cursor=pointer]:
+          - /url: /chat
+          - img [ref=e36]
+          - generic [ref=e38]: Chat
+      - generic [ref=e39]:
+        - generic [ref=e40]: 🌊
+        - generic [ref=e41]: v1.0
+    - main [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - img [ref=e46]
+            - heading "Events" [level=1] [ref=e48]
+          - paragraph [ref=e49]: 12 events this season
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - button "All" [ref=e53] [cursor=pointer]
+              - button "This Week" [ref=e54] [cursor=pointer]
+              - button "This Month" [ref=e55] [cursor=pointer]
+              - button "Upcoming" [ref=e56] [cursor=pointer]
+            - generic [ref=e57]:
+              - button "All Venues" [ref=e58] [cursor=pointer]
+              - button "Beach Terrace" [ref=e59] [cursor=pointer]
+              - button "Cove Stage" [ref=e60] [cursor=pointer]
+              - button "Main Stage" [ref=e61] [cursor=pointer]
+              - button "Sunset Deck" [ref=e62] [cursor=pointer]
+          - generic [ref=e63]:
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e68]:
+                  - img [ref=e69]
+                  - text: Sat 6 Jun
+                - generic [ref=e72]: Sunset Groove
+              - generic [ref=e73]:
+                - generic [ref=e74]: Sunset Groove
+                - generic [ref=e75]:
+                  - img [ref=e76]
+                  - text: Main Stage
+                - generic [ref=e79]:
+                  - img [ref=e80]
+                  - text: 7:00 PM → 11:30 PM
+                - generic [ref=e83]:
+                  - img [ref=e84]
+                  - text: Aïcha Kouyaté
+                - generic [ref=e92]: 66% full
+                - link "View Details →" [ref=e93] [cursor=pointer]:
+                  - /url: /events/e1
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - generic [ref=e98]:
+                  - img [ref=e99]
+                  - text: Sat 13 Jun
+                - generic [ref=e102]: Neon Tide
+              - generic [ref=e103]:
+                - generic [ref=e104]: Neon Tide
+                - generic [ref=e105]:
+                  - img [ref=e106]
+                  - text: Beach Terrace
+                - generic [ref=e109]:
+                  - img [ref=e110]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e113]:
+                  - img [ref=e114]
+                  - text: Yuki Tanaka
+                - generic [ref=e122]: 54% full
+                - link "View Details →" [ref=e123] [cursor=pointer]:
+                  - /url: /events/e2
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - generic [ref=e128]:
+                  - img [ref=e129]
+                  - text: Fri 19 Jun
+                - generic [ref=e132]: Afrobeach Uprising
+              - generic [ref=e133]:
+                - generic [ref=e134]: Afrobeach Uprising
+                - generic [ref=e135]:
+                  - img [ref=e136]
+                  - text: Sunset Deck
+                - generic [ref=e139]:
+                  - img [ref=e140]
+                  - text: 7:00 PM → 11:00 PM
+                - generic [ref=e143]:
+                  - img [ref=e144]
+                  - text: Kofi Acheampong
+                - generic [ref=e152]: 55% full
+                - link "View Details →" [ref=e153] [cursor=pointer]:
+                  - /url: /events/e3
+            - generic [ref=e155]:
+              - generic [ref=e156]:
+                - generic [ref=e158]:
+                  - img [ref=e159]
+                  - text: Sat 27 Jun
+                - generic [ref=e162]: Reggae Cove
+              - generic [ref=e163]:
+                - generic [ref=e164]: Reggae Cove
+                - generic [ref=e165]:
+                  - img [ref=e166]
+                  - text: Cove Stage
+                - generic [ref=e169]:
+                  - img [ref=e170]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e173]:
+                  - img [ref=e174]
+                  - text: Amara Diallo
+                - generic [ref=e182]: 47% full
+                - link "View Details →" [ref=e183] [cursor=pointer]:
+                  - /url: /events/e4
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - generic [ref=e188]:
+                  - img [ref=e189]
+                  - text: Sat 4 Jul
+                - generic [ref=e192]: R&B Under the Stars
+              - generic [ref=e193]:
+                - generic [ref=e194]: R&B Under the Stars
+                - generic [ref=e195]:
+                  - img [ref=e196]
+                  - text: Main Stage
+                - generic [ref=e199]:
+                  - img [ref=e200]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e203]:
+                  - img [ref=e204]
+                  - text: Darius White
+                - generic [ref=e212]: 95% full
+                - link "View Details →" [ref=e213] [cursor=pointer]:
+                  - /url: /events/e5
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - generic [ref=e218]:
+                  - img [ref=e219]
+                  - text: Sat 11 Jul
+                - generic [ref=e222]: Jazz & Moonrise
+              - generic [ref=e223]:
+                - generic [ref=e224]: Jazz & Moonrise
+                - generic [ref=e225]:
+                  - img [ref=e226]
+                  - text: Beach Terrace
+                - generic [ref=e229]:
+                  - img [ref=e230]
+                  - text: 7:00 PM → 10:30 PM
+                - generic [ref=e233]:
+                  - img [ref=e234]
+                  - text: Elena Moreau
+                - generic [ref=e242]: 54% full
+                - link "View Details →" [ref=e243] [cursor=pointer]:
+                  - /url: /events/e6
+            - generic [ref=e245]:
+              - generic [ref=e246]:
+                - generic [ref=e248]:
+                  - img [ref=e249]
+                  - text: Sat 18 Jul
+                - generic [ref=e252]: Bossa Sunset
+              - generic [ref=e253]:
+                - generic [ref=e254]: Bossa Sunset
+                - generic [ref=e255]:
+                  - img [ref=e256]
+                  - text: Sunset Deck
+                - generic [ref=e259]:
+                  - img [ref=e260]
+                  - text: 7:00 PM → 10:30 PM
+                - generic [ref=e263]:
+                  - img [ref=e264]
+                  - text: Lucia Fernandez
+                - generic [ref=e272]: 56% full
+                - link "View Details →" [ref=e273] [cursor=pointer]:
+                  - /url: /events/e7
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e278]:
+                  - img [ref=e279]
+                  - text: Sat 25 Jul
+                - generic [ref=e282]: Surf & Soul Collision
+              - generic [ref=e283]:
+                - generic [ref=e284]: Surf & Soul Collision
+                - generic [ref=e285]:
+                  - img [ref=e286]
+                  - text: Main Stage
+                - generic [ref=e289]:
+                  - img [ref=e290]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e293]:
+                  - img [ref=e294]
+                  - text: Kai Nakashima
+                - generic [ref=e302]: 96% full
+                - link "View Details →" [ref=e303] [cursor=pointer]:
+                  - /url: /events/e8
+            - generic [ref=e305]:
+              - generic [ref=e306]:
+                - generic [ref=e308]:
+                  - img [ref=e309]
+                  - text: Sat 1 Aug
+                - generic [ref=e312]: Paradise Grand Night
+              - generic [ref=e313]:
+                - generic [ref=e314]: Paradise Grand Night
+                - generic [ref=e315]:
+                  - img [ref=e316]
+                  - text: Main Stage
+                - generic [ref=e319]:
+                  - img [ref=e320]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e323]:
+                  - img [ref=e324]
+                  - text: Aïcha Kouyaté
+                - generic [ref=e332]: 92% full
+                - link "View Details →" [ref=e333] [cursor=pointer]:
+                  - /url: /events/e9
+            - generic [ref=e335]:
+              - generic [ref=e336]:
+                - generic [ref=e338]:
+                  - img [ref=e339]
+                  - text: Sat 8 Aug
+                - generic [ref=e342]: Cove Sessions
+              - generic [ref=e343]:
+                - generic [ref=e344]: Cove Sessions
+                - generic [ref=e345]:
+                  - img [ref=e346]
+                  - text: Cove Stage
+                - generic [ref=e349]:
+                  - img [ref=e350]
+                  - text: 7:00 PM → 10:30 PM
+                - generic [ref=e353]:
+                  - img [ref=e354]
+                  - text: Yuki Tanaka
+                - generic [ref=e362]: 50% full
+                - link "View Details →" [ref=e363] [cursor=pointer]:
+                  - /url: /events/e10
+            - generic [ref=e365]:
+              - generic [ref=e366]:
+                - generic [ref=e368]:
+                  - img [ref=e369]
+                  - text: Sat 15 Aug
+                - generic [ref=e372]: Cumbia & Tides
+              - generic [ref=e373]:
+                - generic [ref=e374]: Cumbia & Tides
+                - generic [ref=e375]:
+                  - img [ref=e376]
+                  - text: Sunset Deck
+                - generic [ref=e379]:
+                  - img [ref=e380]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e383]:
+                  - img [ref=e384]
+                  - text: Mateo Rivera
+                - generic [ref=e392]: 66% full
+                - link "View Details →" [ref=e393] [cursor=pointer]:
+                  - /url: /events/e11
+            - generic [ref=e395]:
+              - generic [ref=e396]:
+                - generic [ref=e398]:
+                  - img [ref=e399]
+                  - text: Sat 22 Aug
+                - generic [ref=e402]: Soul at Midnight
+              - generic [ref=e403]:
+                - generic [ref=e404]: Soul at Midnight
+                - generic [ref=e405]:
+                  - img [ref=e406]
+                  - text: Beach Terrace
+                - generic [ref=e409]:
+                  - img [ref=e410]
+                  - text: 8:00 PM → 12:00 AM
+                - generic [ref=e413]:
+                  - img [ref=e414]
+                  - text: Nora Osei
+                - generic [ref=e422]: 81% full
+                - link "View Details →" [ref=e423] [cursor=pointer]:
+                  - /url: /events/e12
+  - button "Open Next.js Dev Tools" [ref=e429] [cursor=pointer]:
+    - img [ref=e430]
+  - alert [ref=e433]

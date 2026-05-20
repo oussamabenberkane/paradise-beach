@@ -1,0 +1,157 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - generic [ref=e10]:
+          - generic [ref=e11]: Paradise Beach
+          - generic [ref=e12]: Beach Venue
+      - navigation [ref=e13]:
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - img [ref=e15]
+          - generic [ref=e20]: Dashboard
+        - link "Events" [ref=e21] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e22]
+          - generic [ref=e24]: Events
+        - link "Singers" [ref=e25] [cursor=pointer]:
+          - /url: /singers
+          - img [ref=e26]
+          - generic [ref=e30]: Singers
+        - link "Tickets" [ref=e31] [cursor=pointer]:
+          - /url: /tickets
+          - img [ref=e32]
+          - generic [ref=e34]: Tickets
+        - link "Chat" [ref=e35] [cursor=pointer]:
+          - /url: /chat
+          - img [ref=e36]
+          - generic [ref=e38]: Chat
+      - generic [ref=e39]:
+        - generic [ref=e40]: 🌊
+        - generic [ref=e41]: v1.0
+    - main [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - heading "Dashboard" [level=1] [ref=e45]
+          - paragraph [ref=e46]: Season overview
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - img [ref=e51]
+            - generic [ref=e53]:
+              - generic [ref=e54]: "12"
+              - generic [ref=e55]: Upcoming Events
+          - generic [ref=e56]:
+            - img [ref=e58]
+            - generic [ref=e60]:
+              - generic [ref=e61]: 4,018
+              - generic [ref=e62]: Tickets Sold
+          - generic [ref=e63]:
+            - img [ref=e65]
+            - generic [ref=e70]:
+              - generic [ref=e71]: 73% filled
+              - generic [ref=e72]: Season Capacity
+          - generic [ref=e73]:
+            - img [ref=e75]
+            - generic [ref=e78]:
+              - generic [ref=e79]: €261,640
+              - generic [ref=e80]: Total Revenue
+        - generic [ref=e81]:
+          - heading "Next Up" [level=2] [ref=e83]
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - img
+              - generic [ref=e86]: NEXT EVENT
+              - generic [ref=e87]:
+                - generic [ref=e88]: Sunset Groove
+                - generic [ref=e89]: Main Stage
+            - generic [ref=e90]:
+              - generic [ref=e91]: SAT 6 JUN
+              - heading "Sunset Groove" [level=2] [ref=e92]
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - img [ref=e96]
+                  - text: Main Stage
+                - generic [ref=e99]:
+                  - img [ref=e101]
+                  - text: 7:00 PM → 11:30 PM
+                - generic [ref=e104]:
+                  - img [ref=e106]
+                  - text: Aïcha Kouyaté
+              - generic [ref=e108]: 170 tickets remaining
+              - link "View Event" [ref=e109] [cursor=pointer]:
+                - /url: /events/e1
+                - text: View Event
+                - img [ref=e110]
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - heading "All Events" [level=2] [ref=e114]
+            - link "View all" [ref=e115] [cursor=pointer]:
+              - /url: /events
+              - text: View all
+              - img [ref=e116]
+          - generic [ref=e118]:
+            - link "Sunset Groove Sat 6 Jun Aïcha Kouyaté Capacity 66%" [ref=e119] [cursor=pointer]:
+              - /url: /events/e1
+              - generic [ref=e120]:
+                - generic [ref=e121]: Sunset Groove
+                - generic [ref=e122]: Sat 6 Jun
+              - generic [ref=e123]:
+                - img [ref=e124]
+                - text: Aïcha Kouyaté
+              - generic [ref=e127]:
+                - generic [ref=e128]: Capacity
+                - generic [ref=e129]: 66%
+            - link "Neon Tide Sat 13 Jun Yuki Tanaka Capacity 54%" [ref=e132] [cursor=pointer]:
+              - /url: /events/e2
+              - generic [ref=e133]:
+                - generic [ref=e134]: Neon Tide
+                - generic [ref=e135]: Sat 13 Jun
+              - generic [ref=e136]:
+                - img [ref=e137]
+                - text: Yuki Tanaka
+              - generic [ref=e140]:
+                - generic [ref=e141]: Capacity
+                - generic [ref=e142]: 54%
+            - link "Afrobeach Uprising Fri 19 Jun Kofi Acheampong Capacity 55%" [ref=e145] [cursor=pointer]:
+              - /url: /events/e3
+              - generic [ref=e146]:
+                - generic [ref=e147]: Afrobeach Uprising
+                - generic [ref=e148]: Fri 19 Jun
+              - generic [ref=e149]:
+                - img [ref=e150]
+                - text: Kofi Acheampong
+              - generic [ref=e153]:
+                - generic [ref=e154]: Capacity
+                - generic [ref=e155]: 55%
+        - generic [ref=e158]:
+          - button "Ask the Beach Assistant Explore events, artists, and ticket availability Who is playing this weekend? Chat now" [ref=e159] [cursor=pointer]:
+            - img
+            - generic [ref=e160]:
+              - generic [ref=e161]:
+                - img [ref=e163]
+                - generic [ref=e165]:
+                  - heading "Ask the Beach Assistant" [level=3] [ref=e166]
+                  - paragraph [ref=e167]: Explore events, artists, and ticket availability
+              - generic [ref=e168]:
+                - img [ref=e169]
+                - generic [ref=e172]: Who is playing this weekend?
+                - generic [ref=e173]:
+                  - text: Chat now
+                  - img [ref=e174]
+          - link "Featured Artist 🎤 Aïcha Kouyaté Senegalese Afrobeats Soul 3 upcoming events" [ref=e176] [cursor=pointer]:
+            - /url: /singers/s1
+            - generic [ref=e177]: Featured Artist
+            - generic [ref=e178]:
+              - generic [ref=e179]: 🎤
+              - generic [ref=e180]:
+                - generic [ref=e181]: Aïcha Kouyaté
+                - generic [ref=e182]: Senegalese
+            - generic [ref=e183]:
+              - generic [ref=e184]: Afrobeats
+              - generic [ref=e185]: Soul
+            - generic [ref=e186]:
+              - generic [ref=e187]: 3 upcoming events
+              - img [ref=e188]
+  - button "Open Next.js Dev Tools" [ref=e196] [cursor=pointer]:
+    - img [ref=e197]
