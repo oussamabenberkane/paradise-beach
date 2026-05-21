@@ -10,19 +10,24 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles, ChevronDown } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { ShowcaseData, EnrichedEvent } from "../_shared/data";
 import { formatDate, formatCurrency, formatTime } from "@/lib/utils";
 import { useCountUp } from "../_shared/hooks";
+import { PalmsBack, PalmsMid, PalmsFront, PalmsHeader } from "./SunsetPalms";
 import "./sunsetstrip.css";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Event-card photos (Unsplash credits: Steven Weeks, Jamaal Cooks, Spencer Imbrock)
+/* Gated: flip to true after the palm scaffold is approved, then rebuild
+   the cinematic timeline against the revised rest-frame composition
+   (sun upper-right, diagonal arc, held peak, foreground push-in). */
+const MOTION_PASS_READY = false;
+
 const CARD_PHOTOS = [
   "/showcase/events/sunset-crowd.webp",
   "/showcase/events/golden-watchers.webp",
@@ -30,141 +35,369 @@ const CARD_PHOTOS = [
 ];
 
 export function SunsetStrip({ data }: { data: ShowcaseData }) {
-  const { next, topGrid, stats } = data;
   const reduced = useReducedMotion();
-  const heroRef = useRef<HTMLElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  // GSAP pinned hero with scrubbed multi-layer parallax timeline
+  /* ─── GSAP cinematic timeline ─── */
   useEffect(() => {
-    if (!heroRef.current) return;
-    if (reduced) return;
+    if (!MOTION_PASS_READY) return;
+    if (!rootRef.current || reduced) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: heroRef.current,
+          trigger: ".ss-strip-stage",
           start: "top top",
-          end: "+=85%",
-          pin: true,
-          pinSpacing: true,
+          end: "+=150%",
+          pin: ".ss-strip",
           scrub: 0.6,
           anticipatePin: 1,
         },
       });
 
-      // back layer (sky) — slow upward drift + slight zoom
-      tl.to(".ss-layer-sky", { yPercent: -8, scale: 1.08, ease: "none" }, 0)
-        // sun arcs down behind the horizon
-        .to(".ss-hero-sun", { y: 320, scale: 0.78, ease: "none" }, 0)
-        // foreground palms move faster (closer)
-        .to(".ss-layer-palms", { yPercent: 14, ease: "none" }, 0)
-        // hero content drifts up + fades
-        .to(".ss-hero-content", { y: -160, opacity: 0, ease: "none" }, 0);
-    }, heroRef);
+      /* 0–10% scroll hint dissolves */
+      tl.to(".ss-strip-cta", { opacity: 0, y: -8, ease: "none" }, 0);
+
+      /* CONTINUOUS — sky color temperature shifts warm→cool via crossfade */
+      tl.fromTo(
+        ".ss-strip-sky-cool",
+        { opacity: 0 },
+        { opacity: 1, ease: "none", duration: 1 },
+        0
+      );
+
+      /* CONTINUOUS — sun descends (eased so it lingers at horizon) */
+      tl.fromTo(
+        ".ss-strip-sun",
+        { yPercent: 0 },
+        { yPercent: 105, ease: "power2.inOut", duration: 1 },
+        0
+      );
+
+      /* CONTINUOUS — night curtain descends from top, slower than sun */
+      tl.fromTo(
+        ".ss-strip-night",
+        { yPercent: -100 },
+        { yPercent: 0, ease: "power1.in", duration: 1 },
+        0
+      );
+
+      /* 0–50% — palms rise into frame */
+      tl.fromTo(
+        ".ss-strip-palms",
+        { yPercent: 8 },
+        { yPercent: -10, ease: "power1.out", duration: 0.7 },
+        0
+      );
+
+      /* 0–55% — haze drifts up + thins */
+      tl.fromTo(
+        ".ss-strip-haze",
+        { yPercent: 0, opacity: 0.95 },
+        { yPercent: -45, opacity: 0.45, ease: "power1.out", duration: 0.7 },
+        0
+      );
+
+      /* 0–55% — sea drifts slightly upward (sun settles into water) */
+      tl.fromTo(
+        ".ss-strip-sea",
+        { yPercent: 0 },
+        { yPercent: -6, ease: "power1.out", duration: 0.7 },
+        0
+      );
+
+      /* 0–60% — boardwalk + foreground sand slide DOWN and OUT */
+      tl.fromTo(
+        ".ss-strip-boardwalk",
+        { yPercent: 0 },
+        { yPercent: 140, ease: "power2.in", duration: 0.7 },
+        0
+      );
+
+      /* 30–55% PEAK HOLD — flare blooms, saturation peaks, sun barely moves */
+      tl.fromTo(
+        ".ss-strip-flare",
+        { opacity: 0, scale: 0.6 },
+        { opacity: 1, scale: 1.4, ease: "power2.out", duration: 0.2 },
+        0.3
+      );
+      tl.to(
+        ".ss-strip-flare",
+        { opacity: 0, scale: 1.7, ease: "power2.in", duration: 0.15 },
+        0.55
+      );
+
+      /* 55–80% — stars fade in upper register */
+      tl.fromTo(
+        ".ss-strip-stars",
+        { opacity: 0 },
+        { opacity: 1, ease: "power2.in", duration: 0.25 },
+        0.55
+      );
+
+      /* 60–95% — neon signs flicker on, left to right */
+      tl.fromTo(
+        ".ss-neon-1",
+        { opacity: 0 },
+        { opacity: 1, ease: "steps(4)", duration: 0.08 },
+        0.62
+      );
+      tl.fromTo(
+        ".ss-neon-2",
+        { opacity: 0 },
+        { opacity: 1, ease: "steps(4)", duration: 0.08 },
+        0.70
+      );
+      tl.fromTo(
+        ".ss-neon-ask",
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, ease: "steps(5)", duration: 0.1 },
+        0.78
+      );
+      tl.fromTo(
+        ".ss-neon-3",
+        { opacity: 0 },
+        { opacity: 1, ease: "steps(4)", duration: 0.08 },
+        0.86
+      );
+
+      /* 75–100% — dashboard glow reveals from below */
+      tl.fromTo(
+        ".ss-strip-handoff",
+        { opacity: 0 },
+        { opacity: 1, ease: "power2.out", duration: 0.25 },
+        0.75
+      );
+
+      /* 80–100% — sticky nav slides down */
+      tl.fromTo(
+        ".ss-sticky-nav",
+        { yPercent: -100, opacity: 0 },
+        { yPercent: 0, opacity: 1, ease: "power2.out", duration: 0.2 },
+        0.85
+      );
+    }, rootRef);
 
     return () => ctx.revert();
   }, [reduced]);
 
   return (
-    <div className="ss-root">
-      {/* Fallback drifting gradient sky behind everything (fixed) */}
-      <div className="ss-sky-gradient" aria-hidden="true" />
+    <div className="ss-root" ref={rootRef}>
+      {/* ────────────── STRIP STAGE (pinned cinematic) ────────────── */}
+      <div className="ss-strip-stage">
+        <div className="ss-strip">
+          {/* SKY — warm layer (amber + rose) */}
+          <div className="ss-strip-sky ss-strip-sky-warm" aria-hidden="true">
+            <div className="ss-strip-sky-noise" />
+          </div>
+          {/* SKY — cool layer crossfades on top during descent */}
+          <div className="ss-strip-sky ss-strip-sky-cool" aria-hidden="true" />
 
-      {/* TOP */}
-      <header className="ss-top">
-        <div className="ss-top-brand">
-          <span className="ss-brand-sun" aria-hidden="true" />
+          {/* NIGHT CURTAIN (descends from top) */}
+          <div className="ss-strip-night" aria-hidden="true">
+            <StarsLayer />
+          </div>
+
+          {/* STARS (independent fade-in layer) */}
+          <div className="ss-strip-stars" aria-hidden="true">
+            <StarsLayer />
+          </div>
+
+          {/* SUN with halo */}
+          <div className="ss-strip-sun-wrap" aria-hidden="true">
+            <div className="ss-strip-sun">
+              <svg viewBox="0 0 320 320">
+                <defs>
+                  <radialGradient id="ss-sun-core" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#FFF6CC" />
+                    <stop offset="40%" stopColor="#FFD23F" />
+                    <stop offset="100%" stopColor="#FF8E3C" />
+                  </radialGradient>
+                  <radialGradient id="ss-sun-halo" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#FFD23F" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#FFD23F" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                <circle cx="160" cy="160" r="158" fill="url(#ss-sun-halo)" className="ss-sun-pulse" />
+                <circle cx="160" cy="160" r="92" fill="url(#ss-sun-core)" />
+              </svg>
+            </div>
+          </div>
+
+          {/* HORIZON FLARE (peak moment) */}
+          <div className="ss-strip-flare" aria-hidden="true">
+            <svg viewBox="0 0 1600 240" preserveAspectRatio="none">
+              <defs>
+                <radialGradient id="ss-flare-grad" cx="50%" cy="50%" r="40%">
+                  <stop offset="0%" stopColor="#FFF1B8" stopOpacity="0.95" />
+                  <stop offset="40%" stopColor="#FFD23F" stopOpacity="0.55" />
+                  <stop offset="100%" stopColor="#FF6B6B" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+              <ellipse cx="800" cy="120" rx="600" ry="60" fill="url(#ss-flare-grad)" />
+            </svg>
+          </div>
+
+          {/* SEA + HORIZON LINE */}
+          <div className="ss-strip-sea" aria-hidden="true">
+            <div className="ss-strip-sea-line" />
+            <div className="ss-strip-sea-water" />
+          </div>
+
+          {/* PALMS — three depth planes, haze nests between back and mid */}
+          <PalmsBack />
+          <div className="ss-strip-haze" aria-hidden="true" />
+          <PalmsMid />
+          <PalmsFront />
+
+          {/* DUST MOTES — ambient continuous (deterministic positions to avoid SSR mismatch) */}
+          <div className="ss-strip-dust" aria-hidden="true">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <span
+                key={i}
+                className="ss-dust-mote"
+                style={
+                  {
+                    "--mote-top": `${12 + ((i * 17) % 48)}%`,
+                    "--mote-left": `${(i * 37) % 100}%`,
+                    "--mote-delay": `${(i * 1.3) % 9}s`,
+                    "--mote-dur": `${14 + (i % 5) * 3}s`,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
+
+          {/* BOARDWALK / FOREGROUND */}
+          <div className="ss-strip-boardwalk" aria-hidden="true">
+            <div className="ss-strip-board-plank" />
+            <div className="ss-strip-board-sand" />
+          </div>
+
+          {/* NEON SIGNS */}
+          <div className="ss-strip-neon" aria-hidden="true">
+            <span className="ss-neon-1 ss-neon-bulb" style={{ left: "14%", top: "62%" }} />
+            <span className="ss-neon-2 ss-neon-bulb" style={{ left: "78%", top: "60%" }} />
+            <span className="ss-neon-3 ss-neon-bulb" style={{ left: "44%", top: "65%" }} />
+          </div>
+
+          {/* "ASK THE STRIP" NEON SIGN (the chat affordance) */}
+          <Link href="/chat" className="ss-neon-ask">
+            <span className="ss-neon-ask-frame">
+              <span className="ss-neon-ask-text">ASK THE STRIP</span>
+              <span className="ss-neon-ask-sub">
+                <Sparkles size={11} strokeWidth={2.4} />
+                AI · always open
+              </span>
+            </span>
+          </Link>
+
+          {/* SCROLL CTA (initial state) */}
+          <div className="ss-strip-cta" aria-hidden="true">
+            <span className="ss-strip-cta-text">scroll to enter the strip</span>
+            <ChevronDown size={18} strokeWidth={2.2} className="ss-strip-cta-chev" />
+          </div>
+
+          {/* DASHBOARD HANDOFF GLOW (bleed into strip during tail end) */}
+          <div className="ss-strip-handoff" aria-hidden="true" />
+
+          {/* REDUCED-MOTION STATIC FRAME */}
+          <noscript />
+        </div>
+      </div>
+
+      {/* ────────────── DASHBOARD (dark, lit by neon) ────────────── */}
+      <DarkDashboard data={data} />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────── */
+/*                  COMPONENTS                  */
+/* ─────────────────────────────────────────── */
+
+function StarsLayer() {
+  // 36 small dots at random positions; CSS gives twinkle
+  const stars = Array.from({ length: 36 }, (_, i) => ({
+    cx: (i * 47.3) % 100,
+    cy: (i * 31.7) % 60,
+    r: 0.12 + ((i * 7) % 5) * 0.04,
+    delay: ((i * 0.27) % 6).toFixed(2),
+  }));
+  return (
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      {stars.map((s, i) => (
+        <circle
+          key={i}
+          cx={s.cx}
+          cy={s.cy}
+          r={s.r}
+          fill="white"
+          opacity={0.9}
+          className="ss-star"
+          style={{ animationDelay: `${s.delay}s` }}
+        />
+      ))}
+    </svg>
+  );
+}
+
+/* ─────────────────────────────────────────── */
+/*                 DASHBOARD                    */
+/* ─────────────────────────────────────────── */
+
+function DarkDashboard({ data }: { data: ShowcaseData }) {
+  const { next, topGrid, stats } = data;
+
+  return (
+    <div className="ss-dashboard">
+      {/* persistent palm silhouette header */}
+      <div className="ss-palm-header" aria-hidden="true">
+        <PalmsHeader />
+      </div>
+
+      {/* sticky dark nav (revealed at handoff) */}
+      <header className="ss-sticky-nav">
+        <div className="ss-sticky-brand">
+          <span className="ss-sticky-sun" aria-hidden="true" />
           <span>paradise · summer &apos;26</span>
         </div>
-        <nav className="ss-top-nav" aria-label="Festival sections">
-          <a className="ss-top-link is-active">Lineup</a>
-          <a className="ss-top-link">Stages</a>
-          <a className="ss-top-link">Tickets</a>
-          <a className="ss-top-link">Plan</a>
+        <nav className="ss-sticky-pills" aria-label="Festival sections">
+          <a className="ss-sticky-pill is-active">Lineup</a>
+          <a className="ss-sticky-pill">Stages</a>
+          <a className="ss-sticky-pill">Tickets</a>
+          <a className="ss-sticky-pill">Plan</a>
         </nav>
-        <Link href="/chat" className="ss-top-cta">
-          Plan your night
+        <Link href="/chat" className="ss-sticky-cta">
+          ASK THE STRIP
           <ArrowUpRight size={14} strokeWidth={2.4} />
         </Link>
       </header>
 
-      {/* HERO — pinned by GSAP, layered photo parallax */}
-      <section className="ss-hero" ref={heroRef}>
-        {/* back layer — sky photo (Photo: Philipp / Unsplash) */}
-        <div className="ss-layer ss-layer-sky" aria-hidden="true">
-          <img
-            src="/showcase/hero/sky.webp"
-            alt=""
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
-          <div className="ss-layer-sky-scrim" />
-        </div>
-
-        {/* mid: SVG sun with glow */}
-        <div className="ss-hero-sun" aria-hidden="true">
-          <svg viewBox="0 0 240 240">
-            <defs>
-              <radialGradient id="ss-sun-grad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FFF1B8" />
-                <stop offset="55%" stopColor="#FFD23F" />
-                <stop offset="100%" stopColor="#FF6B6B" />
-              </radialGradient>
-              <radialGradient id="ss-sun-halo" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FFD23F" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#FFD23F" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            <circle cx="120" cy="120" r="118" fill="url(#ss-sun-halo)" />
-            <circle cx="120" cy="120" r="86" fill="url(#ss-sun-grad)" />
-          </svg>
-        </div>
-
-        {/* front layer — palm silhouette photo (Photo: Zoshua Colah / Unsplash) */}
-        <div className="ss-layer ss-layer-palms" aria-hidden="true">
-          <img
-            src="/showcase/hero/palm.webp"
-            alt=""
-            loading="eager"
-            decoding="async"
-          />
-        </div>
-
-        <div className="ss-hero-content">
-          <span className="ss-hero-badge">★ TWELVE NIGHTS · SUMMER &apos;26 ★</span>
-          <h1 className="ss-hero-title">
-            <span className="ss-title-line">ENDLESS</span>
-            <span className="ss-title-line ss-title-line-2">SUMMER.</span>
-          </h1>
-          <p className="ss-hero-deck">
-            Twelve nights of sun, sand, and the most carefully curated coastal
-            lineup of the year. Doors at sunset. Music until last light.
-          </p>
-          {next && (
-            <Link href={`/events/${next.event.id}`} className="ss-hero-next">
-              <span className="ss-next-tag">TONIGHT</span>
-              <div className="ss-next-meta">
-                <span className="ss-next-title">{next.event.title}</span>
-                <span className="ss-next-sub">
-                  with {next.headliner?.name ?? "TBA"} · {next.event.venueSection}
-                </span>
-              </div>
-              <span className="ss-next-cta">
-                from {formatCurrency(next.cheapestPrice)} →
+      {/* HEADLINE BAND — replaces the strip's CTAs in document flow */}
+      <section className="ss-band">
+        <span className="ss-band-eyebrow">★ TWELVE NIGHTS · SUMMER &apos;26 ★</span>
+        <h1 className="ss-band-title">
+          The strip is open<br />
+          <em>until last light.</em>
+        </h1>
+        {next && (
+          <Link href={`/events/${next.event.id}`} className="ss-band-next">
+            <span className="ss-band-next-tag">TONIGHT</span>
+            <div className="ss-band-next-meta">
+              <span className="ss-band-next-title">{next.event.title}</span>
+              <span className="ss-band-next-sub">
+                with {next.headliner?.name ?? "TBA"} · {next.event.venueSection}
               </span>
-            </Link>
-          )}
-        </div>
-
-        {/* scroll hint at bottom */}
-        <div className="ss-scroll-hint" aria-hidden="true">
-          <span>scroll</span>
-          <span className="ss-scroll-hint-line" />
-        </div>
+            </div>
+            <span className="ss-band-next-cta">
+              from {formatCurrency(next.cheapestPrice)} →
+            </span>
+          </Link>
+        )}
       </section>
 
-      {/* STAT STRIP */}
+      {/* STATS */}
       <section className="ss-stats" aria-label="Season totals">
         <StatBlock label="NIGHTS" value={stats.upcomingCount} />
         <StatBlock label="TICKETS SOLD" value={stats.totalSold} />
@@ -192,30 +425,16 @@ export function SunsetStrip({ data }: { data: ShowcaseData }) {
         </div>
       </section>
 
-      {/* CHAT — water-photo backdrop (Photo: Bernd Dittrich / Unsplash) */}
+      {/* CHAT — "ASK THE STRIP" detailed panel */}
       <section className="ss-chat">
         <div className="ss-chat-box">
-          <div className="ss-chat-photo" aria-hidden="true">
-            <img
-              src="/showcase/hero/water.webp"
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="ss-chat-photo-scrim" />
-          </div>
-          <div className="ss-chat-row">
-            <div className="ss-chat-icon" aria-hidden="true">
-              <Sparkles size={20} strokeWidth={2.4} />
-            </div>
-            <div className="ss-chat-head">
-              <span className="ss-chat-eyebrow">PARADISE ASSISTANT</span>
-              <h3 className="ss-chat-title">Talk to the lineup.</h3>
-            </div>
+          <div className="ss-chat-neon-frame">
+            <span className="ss-chat-neon-text">ASK THE STRIP</span>
+            <span className="ss-chat-neon-sub">AI · always open</span>
           </div>
           <p className="ss-chat-body">
-            Tell us the kind of night you want. We&apos;ll tell you where it
-            lives — every artist, every tier, every seat.
+            The same concierge from the sign upstairs — only here you can see
+            recent questions, suggested prompts, and the lineup at a glance.
           </p>
           <div className="ss-chat-prompts">
             {["What's playing tonight?", "Cheapest reggae night", "VIP nights in July"].map(
@@ -233,18 +452,15 @@ export function SunsetStrip({ data }: { data: ShowcaseData }) {
         </div>
       </section>
 
-      {/* MARQUEE — velocity reactor */}
       <VelocityMarquee />
 
       <footer className="ss-footer">
         <span>paradise · summer 2026</span>
-        <span>★ keep it bright ★</span>
+        <span>★ open until last light ★</span>
       </footer>
     </div>
   );
 }
-
-/* ─────────────────────────────────────────── */
 
 function StatBlock({
   label,
@@ -330,10 +546,6 @@ function SunsetCard({ e, index }: { e: EnrichedEvent; index: number }) {
   );
 }
 
-/**
- * Marquee whose speed reacts to scroll velocity. Works under Lenis since Lenis
- * modifies window.scrollY which useVelocity consumes.
- */
 function VelocityMarquee() {
   const reduced = useReducedMotion();
   const { scrollY } = useScroll();
@@ -353,7 +565,7 @@ function VelocityMarquee() {
       <div className="ss-marquee-track" ref={trackRef}>
         {Array.from({ length: 6 }).map((_, i) => (
           <span key={i} className="ss-marquee-item">
-            ENDLESS SUMMER
+            UNTIL LAST LIGHT
             <span className="ss-mq-star">★</span>
             PARADISE BEACH
             <span className="ss-mq-star">★</span>
