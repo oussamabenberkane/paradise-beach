@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import {
   Manrope,
   JetBrains_Mono,
-  Fraunces,
-  Instrument_Serif,
   Anton,
   DM_Sans,
+  Plus_Jakarta_Sans,
 } from "next/font/google";
 import "./globals.css";
 import { AgentConversationProvider } from "@/components/dashboard/AgentConversationProvider";
@@ -22,20 +21,6 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-display-editorial",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-display-noir",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-});
-
 const anton = Anton({
   variable: "--font-display-poster",
   subsets: ["latin"],
@@ -46,6 +31,12 @@ const dmSans = DM_Sans({
   variable: "--font-sans-poster",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans-sunset",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -61,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${instrumentSerif.variable} ${anton.variable} ${dmSans.variable}`}
+      className={`${manrope.variable} ${jetbrainsMono.variable} ${anton.variable} ${dmSans.variable} ${plusJakarta.variable}`}
     >
       <body>
         <AgentConversationProvider>{children}</AgentConversationProvider>

@@ -2,63 +2,76 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Editorial } from "./_directions/Editorial";
-import { Noir } from "./_directions/Noir";
+import { SunsetStrip } from "./_directions/SunsetStrip";
 import { Poster } from "./_directions/Poster";
+import { SmoothScroll } from "./_shared/SmoothScroll";
 import type { ShowcaseData } from "./_shared/data";
 import "./showcase.css";
 
-type Direction = "editorial" | "noir" | "poster";
+type Direction = "sunset" | "poster";
 
 const DIRECTIONS: {
   key: Direction;
   label: string;
   tag: string;
   kbd: string;
+  motion: string;
   swatch: [string, string];
 }[] = [
   {
-    key: "editorial",
-    label: "Editorial Sunset",
+    key: "sunset",
+    label: "Sunset Strip",
     tag: "A",
     kbd: "1",
-    swatch: ["#FAF4EA", "#C2410C"],
-  },
-  {
-    key: "noir",
-    label: "Riviera Noir",
-    tag: "B",
-    kbd: "2",
-    swatch: ["#07101F", "#FF6B35"],
+    motion: "Atmosphere parallax",
+    swatch: ["#FFB87A", "#C94B7C"],
   },
   {
     key: "poster",
     label: "Festival Poster",
-    tag: "C",
-    kbd: "3",
+    tag: "B",
+    kbd: "2",
+    motion: "Scroll-linked",
     swatch: ["#FF4D2E", "#FFB627"],
   },
 ];
 
 export function ShowcaseShell({ data }: { data: ShowcaseData }) {
-  const [active, setActive] = useState<Direction>("editorial");
+  const [active, setActive] = useState<Direction>("sunset");
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === "1") setActive("editorial");
-      else if (e.key === "2") setActive("noir");
-      else if (e.key === "3") setActive("poster");
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+      if (e.key === "1") setActive("sunset");
+      else if (e.key === "2") setActive("poster");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [active]);
+
+  const activeMotion = DIRECTIONS.find((d) => d.key === active)?.motion;
+
   return (
+    <SmoothScroll>
     <div className="showcase-root">
       <div className="showcase-toggle">
         <div className="showcase-toggle-inner">
-          <span className="showcase-brand">paradise · design exploration</span>
+          <span className="showcase-brand">
+            paradise · design exploration
+            {activeMotion && (
+              <span className="showcase-motion-tag" aria-live="polite">
+                · {activeMotion}
+              </span>
+            )}
+          </span>
           <div
             className="showcase-toggle-pills"
             role="tablist"
@@ -103,11 +116,11 @@ export function ShowcaseShell({ data }: { data: ShowcaseData }) {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="showcase-stage"
         >
-          {active === "editorial" && <Editorial data={data} />}
-          {active === "noir" && <Noir data={data} />}
+          {active === "sunset" && <SunsetStrip data={data} />}
           {active === "poster" && <Poster data={data} />}
         </motion.div>
       </AnimatePresence>
     </div>
+    </SmoothScroll>
   );
 }

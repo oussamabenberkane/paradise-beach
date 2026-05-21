@@ -70,6 +70,30 @@
   z-index: 4;
   max-width: 1400px;
   margin: 0 auto;
+  overflow: visible;
+}
+
+.ps-hero-sun {
+  position: absolute;
+  top: -40px;
+  right: clamp(2rem, 6vw, 6rem);
+  width: clamp(140px, 22vw, 280px);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+.ps-hero-sun svg { display: block; width: 100%; height: auto; }
+
+/* GSAP-pinned ticket peel wrapper — needs containment for 3D rotation */
+.ps-ticket-pin {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.ps-hero-grid {
+  position: relative;
+  z-index: 2;
 }
 
 .ps-hero-grid {
@@ -77,6 +101,23 @@
   grid-template-columns: 1.25fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: start;
+  position: relative;
+  z-index: 2;
+}
+
+/* Wave divider between hero and stats — stroke draws on enter */
+.ps-wave-divider {
+  position: relative;
+  z-index: 4;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+.ps-wave-divider svg {
+  display: block;
+  width: 100%;
+  height: 60px;
+  overflow: visible;
 }
 
 @media (max-width: 900px) {
@@ -490,6 +531,25 @@
   position: relative;
   overflow: hidden;
   box-shadow: 6px 6px 0 var(--ps-coral);
+  isolation: isolate;
+}
+
+.ps-chat-photo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.ps-chat-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ps-chat-photo-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(26, 15, 8, 0.92) 0%, rgba(26, 15, 8, 0.78) 50%, rgba(255, 182, 39, 0.30) 100%);
 }
 
 .ps-chat-stamp {
@@ -593,4 +653,12 @@
   outline: 3px solid var(--ps-coral);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+.ps-hero-title, .ps-hero-deck {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-marquee-track { animation: none; transform: translateX(0); }
 }
