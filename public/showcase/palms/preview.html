@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>palm candidates</title>
+<style>
+  body { margin: 0; background: #160B1F; color: #FFF1B8; font: 13px/1.5 system-ui; padding: 24px; }
+  h1 { font-weight: 600; margin: 0 0 16px; letter-spacing: -0.01em; }
+  .meta { color: #9C8270; font-size: 12px; margin-bottom: 32px; }
+  .row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; align-items: end; min-height: 360px; padding: 24px 0; border-top: 1px solid rgba(255,241,184,0.12); border-bottom: 1px solid rgba(255,241,184,0.12); margin-bottom: 18px; }
+  .row.warm { background: linear-gradient(180deg, #5C4878 0%, #B36F8F 35%, #EE9576 70%, #FFD6A1 100%); }
+  .slot { position: relative; height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+  .slot img { max-height: 100%; max-width: 100%; display: block; }
+  /* Aubergine via mask-image */
+  .slot.aubergine img {
+    width: 100%; height: 100%; object-fit: contain; object-position: bottom;
+    -webkit-mask-image: var(--mask-url); mask-image: var(--mask-url);
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-position: bottom; mask-position: bottom;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    background: #160B1F;
+  }
+  .label { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #FFD23F; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .size { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #9C8270; }
+  .section-title { font-size: 11px; letter-spacing: 0.2em; color: #9C8270; text-transform: uppercase; margin: 32px 0 12px; }
+</style>
+</head>
+<body>
+  <h1>Palm SVG candidates · OpenClipart · CC0</h1>
+  <p class="meta">Top: dark cinematic context. Bottom: warm sky context (the actual rest frame backdrop). All scaled to 320px height.</p>
+
+  <div class="section-title">— against dark backdrop · all CC0 —</div>
+  <div class="row">
+    <div class="slot"><span class="label">280838</span><img src="palm-280838.svg" /><span class="size">230 kB · 1 path</span></div>
+    <div class="slot"><span class="label">280926</span><img src="palm-280926.svg" /><span class="size">3 kB · 1 path</span></div>
+    <div class="slot"><span class="label">292732</span><img src="palm-292732.svg" /><span class="size">5 kB · 1 path</span></div>
+    <div class="slot"><span class="label">174788</span><img src="palm-174788.svg" /><span class="size">157 kB · 1 path · washingtonia</span></div>
+    <div class="slot"><span class="label">181024</span><img src="palm-181024.svg" /><span class="size">143 kB · 1 path</span></div>
+    <div class="slot"><span class="label">275894</span><img src="palm-275894.svg" /><span class="size">407 kB · 109 paths · scene</span></div>
+  </div>
+
+  <div class="section-title">— against warm sky (the actual rest-frame backdrop) —</div>
+  <div class="row warm">
+    <div class="slot"><img src="palm-280838.svg" /></div>
+    <div class="slot"><img src="palm-280926.svg" /></div>
+    <div class="slot"><img src="palm-292732.svg" /></div>
+    <div class="slot"><img src="palm-174788.svg" /></div>
+    <div class="slot"><img src="palm-181024.svg" /></div>
+    <div class="slot"><img src="palm-275894.svg" /></div>
+  </div>
+</body>
+</html>

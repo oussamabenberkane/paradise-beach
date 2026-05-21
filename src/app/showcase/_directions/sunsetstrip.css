@@ -12,18 +12,22 @@
   --ss-ink: #FFF1B8;
   --ss-ink-2: #D4B894;
   --ss-ink-3: #9C8270;
-  --ss-ink-4: #65556F;
+  --ss-ink-4: #5E4842;
 
   --ss-neon: #FFD23F;
   --ss-neon-2: #FF6B6B;
   --ss-neon-glow: 0 0 24px rgba(255, 210, 63, 0.55), 0 0 60px rgba(255, 107, 107, 0.30);
+  --ss-neon-glow-soft: 0 0 8px rgba(255, 210, 63, 0.4);
 
   font-family: var(--font-sans-sunset), system-ui, sans-serif;
   color: var(--ss-ink);
   background: var(--ss-bg);
   position: relative;
   min-height: 100vh;
-  overflow-x: hidden;
+  /* NOTE: do NOT add overflow-x: hidden here — it makes .ss-root the scrollport
+     for any sticky descendant (cinematic hero, dashboard palm header), which
+     silently breaks position: sticky. Horizontal bleed is contained per-layer
+     instead (.ssv2-sticky overflow:hidden, .ss-marquee overflow:hidden). */
   isolation: isolate;
 }
 
@@ -220,9 +224,9 @@
           mask-image: linear-gradient(180deg, transparent 0%, black 14%, black 100%);
 }
 
-/* PALM PLANES — three depth tiers stacked with haze nested between
-   back (distant) and mid. Each plane is full-bleed at the strip; slot
-   widths derive from aspect-ratio so palms stay proportional. */
+/* PALM PLANES — three depth tiers. Back uses a wide horizontal palm-row
+   scene as a single mask. Mid + front host individual palm slots, each
+   slot mask-imaging its own silhouette. Plane bg/color drives recolor. */
 .ss-palms {
   position: absolute;
   left: 0;
@@ -232,12 +236,21 @@
   will-change: transform;
 }
 
+/* Back: full-width palm-row scene, baked into one mask */
 .ss-palms-back {
-  height: 32%;
+  height: 30%;
   z-index: 7;
-  color: #3A2540;
-  opacity: 0.82;
+  background: #3A2540;
+  opacity: 0.78;
   filter: blur(0.4px);
+  -webkit-mask-image: url(/showcase/palms/palm-275894.svg);
+          mask-image: url(/showcase/palms/palm-275894.svg);
+  -webkit-mask-size: 100% auto;
+          mask-size: 100% auto;
+  -webkit-mask-position: bottom;
+          mask-position: bottom;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
 }
 
 .ss-palms-mid {
@@ -252,18 +265,26 @@
   color: #160B1F;
 }
 
+/* Per-palm slot — aspect-ratio set inline per file so contain-fit
+   doesn't distort. Slot fills plane height; width follows from aspect. */
 .ss-palm-slot {
   position: absolute;
   bottom: 0;
   height: 100%;
-  aspect-ratio: 1 / 2;
 }
 
-.ss-palm-svg {
+.ss-palm-mask {
   width: 100%;
   height: 100%;
-  display: block;
-  overflow: visible;
+  background: currentColor;
+  -webkit-mask-image: var(--palm-src);
+          mask-image: var(--palm-src);
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-position: bottom center;
+          mask-position: bottom center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
 }
 
 /* HAZE — warm horizontal band sitting just above the sea, in front of distant palms */
@@ -528,7 +549,7 @@
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
-/* Override .ss-palms base positioning for the header strip */
+/* Header silhouette — same wide palm-row scene as the back plane, scaled small */
 .ss-palm-header .ss-palms-header {
   position: absolute;
   top: 0;
@@ -536,6 +557,15 @@
   right: 0;
   bottom: 0;
   height: auto;
+  background: #0F0518;
+  -webkit-mask-image: url(/showcase/palms/palm-275894.svg);
+          mask-image: url(/showcase/palms/palm-275894.svg);
+  -webkit-mask-size: 100% auto;
+          mask-size: 100% auto;
+  -webkit-mask-position: bottom;
+          mask-position: bottom;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
 }
 
 /* sticky dark nav */

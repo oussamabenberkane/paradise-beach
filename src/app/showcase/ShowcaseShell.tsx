@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SunsetStrip } from "./_directions/SunsetStrip";
+import { SunsetStripV2 } from "./_directions/SunsetStripV2";
 import { Poster } from "./_directions/Poster";
 import { SmoothScroll } from "./_shared/SmoothScroll";
 import type { ShowcaseData } from "./_shared/data";
@@ -116,7 +116,7 @@ export function ShowcaseShell({ data }: { data: ShowcaseData }) {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="showcase-stage"
         >
-          {active === "sunset" && <SunsetStrip data={data} />}
+          {active === "sunset" && <SunsetStripV2 data={data} />}
           {active === "poster" && <Poster data={data} />}
         </motion.div>
       </AnimatePresence>
