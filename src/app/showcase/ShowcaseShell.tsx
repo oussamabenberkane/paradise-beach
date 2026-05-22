@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ParadiseBeach } from "./_directions/ParadiseBeach";
 import { SunsetStripV2 } from "./_directions/SunsetStripV2";
 import { Poster } from "./_directions/Poster";
+import { Editorial } from "./_directions/Editorial";
 import { SmoothScroll } from "./_shared/SmoothScroll";
 import type { ShowcaseData } from "./_shared/data";
 import "./showcase.css";
 
-type Direction = "sunset" | "poster";
+type Direction = "paradise" | "sunset" | "poster" | "editorial";
 
 const DIRECTIONS: {
   key: Direction;
@@ -19,25 +21,41 @@ const DIRECTIONS: {
   swatch: [string, string];
 }[] = [
   {
-    key: "sunset",
-    label: "Sunset Strip",
+    key: "paradise",
+    label: "Paradise Beach",
     tag: "A",
     kbd: "1",
+    motion: "Warm editorial",
+    swatch: ["#E89B7C", "#C66B3D"],
+  },
+  {
+    key: "sunset",
+    label: "Sunset Strip",
+    tag: "B",
+    kbd: "2",
     motion: "Atmosphere parallax",
     swatch: ["#FFB87A", "#C94B7C"],
   },
   {
     key: "poster",
     label: "Festival Poster",
-    tag: "B",
-    kbd: "2",
+    tag: "C",
+    kbd: "3",
     motion: "Scroll-linked",
     swatch: ["#FF4D2E", "#FFB627"],
+  },
+  {
+    key: "editorial",
+    label: "The Season",
+    tag: "D",
+    kbd: "4",
+    motion: "Maximalist event-first",
+    swatch: ["#000000", "#E8553A"],
   },
 ];
 
 export function ShowcaseShell({ data }: { data: ShowcaseData }) {
-  const [active, setActive] = useState<Direction>("sunset");
+  const [active, setActive] = useState<Direction>("paradise");
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -46,8 +64,10 @@ export function ShowcaseShell({ data }: { data: ShowcaseData }) {
         e.target instanceof HTMLTextAreaElement
       )
         return;
-      if (e.key === "1") setActive("sunset");
-      else if (e.key === "2") setActive("poster");
+      if (e.key === "1") setActive("paradise");
+      else if (e.key === "2") setActive("sunset");
+      else if (e.key === "3") setActive("poster");
+      else if (e.key === "4") setActive("editorial");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -116,8 +136,10 @@ export function ShowcaseShell({ data }: { data: ShowcaseData }) {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="showcase-stage"
         >
-          {active === "sunset" && <SunsetStripV2 data={data} />}
-          {active === "poster" && <Poster data={data} />}
+          {active === "paradise"  && <ParadiseBeach data={data} />}
+          {active === "sunset"    && <SunsetStripV2 data={data} />}
+          {active === "poster"    && <Poster data={data} />}
+          {active === "editorial" && <Editorial />}
         </motion.div>
       </AnimatePresence>
     </div>
