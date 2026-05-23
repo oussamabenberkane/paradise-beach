@@ -64,7 +64,7 @@ export default async function EventDetailPage({ params }: Props) {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "3rem clamp(1.25rem, 4vw, 3rem)", display: "grid", gridTemplateColumns: "1fr minmax(min(100%, 380px), 400px)", gap: "3rem", alignItems: "start" }}>
+      <div className="event-detail-grid" style={{ maxWidth: 1100, margin: "0 auto", padding: "3rem clamp(1.25rem, 4vw, 3rem)", display: "grid", gridTemplateColumns: "1fr minmax(min(100%, 380px), 400px)", gap: "3rem", alignItems: "start" }}>
         {/* Left column */}
         <div>
           {/* Headliner section */}
@@ -164,7 +164,13 @@ export default async function EventDetailPage({ params }: Props) {
 
       <style>{`
         @media (max-width: 800px) {
-          .event-detail-grid { grid-template-columns: 1fr !important; }
+          .event-detail-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .event-detail-grid > div:last-child {
+            order: -1;
+            position: static !important;
+          }
         }
       `}</style>
     </div>
