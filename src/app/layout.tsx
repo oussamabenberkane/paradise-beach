@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Manrope, JetBrains_Mono } from "next/font/google";
+import {
+  Manrope,
+  JetBrains_Mono,
+  Anton,
+  DM_Sans,
+  Plus_Jakarta_Sans,
+  Fraunces,
+} from "next/font/google";
 import "./globals.css";
 import { AgentConversationProvider } from "@/components/dashboard/AgentConversationProvider";
 
@@ -15,6 +22,31 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+const anton = Anton({
+  variable: "--font-display-poster",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-sans-poster",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans-sunset",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-display-beach",
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "Paradise Beach",
   description: "Beach venue management — events, artists & tickets",
@@ -26,7 +58,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${manrope.variable} ${jetbrainsMono.variable} ${anton.variable} ${dmSans.variable} ${plusJakarta.variable} ${fraunces.variable}`}
+    >
       <body>
         <AgentConversationProvider>{children}</AgentConversationProvider>
       </body>

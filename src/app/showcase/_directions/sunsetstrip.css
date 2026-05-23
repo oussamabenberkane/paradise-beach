@@ -1,0 +1,1187 @@
+/* ─────────────────────────────────────────── */
+/*               TOKENS — DARK + NEON            */
+/* ─────────────────────────────────────────── */
+.ss-root {
+  --ss-bg: #160B1F;
+  --ss-surface: #1F1029;
+  --ss-surface-2: #2A1538;
+  --ss-surface-3: #371D45;
+  --ss-border: rgba(255, 241, 184, 0.12);
+  --ss-border-strong: rgba(255, 241, 184, 0.22);
+
+  --ss-ink: #FFF1B8;
+  --ss-ink-2: #D4B894;
+  --ss-ink-3: #9C8270;
+  --ss-ink-4: #5E4842;
+
+  --ss-neon: #FFD23F;
+  --ss-neon-2: #FF6B6B;
+  --ss-neon-glow: 0 0 24px rgba(255, 210, 63, 0.55), 0 0 60px rgba(255, 107, 107, 0.30);
+  --ss-neon-glow-soft: 0 0 8px rgba(255, 210, 63, 0.4);
+
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  color: var(--ss-ink);
+  background: var(--ss-bg);
+  position: relative;
+  min-height: 100vh;
+  /* NOTE: do NOT add overflow-x: hidden here — it makes .ss-root the scrollport
+     for any sticky descendant (cinematic hero, dashboard palm header), which
+     silently breaks position: sticky. Horizontal bleed is contained per-layer
+     instead (.ssv2-sticky overflow:hidden, .ss-marquee overflow:hidden). */
+  isolation: isolate;
+}
+
+/* ─────────────────────────────────────────── */
+/*               STRIP STAGE (PINNED)            */
+/* ─────────────────────────────────────────── */
+.ss-strip-stage { position: relative; z-index: 10; }
+
+.ss-strip {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* SKY LAYERS — warm + cool crossfade */
+.ss-strip-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: opacity;
+}
+
+/* Warm rest sky — peach/coral horizon, dusty rose mid, soft violet only at top.
+   Lower contrast than a peak-sunset, because the sun hasn't dropped yet. */
+.ss-strip-sky-warm {
+  background: linear-gradient(
+    180deg,
+    #5C4878 0%,
+    #845982 13%,
+    #B36F8F 28%,
+    #D3818B 46%,
+    #EE9576 65%,
+    #FAAB76 81%,
+    #FFC289 94%,
+    #FFD6A1 100%
+  );
+}
+
+/* Cool peak sky — crossfades in as the sun reaches the horizon. */
+.ss-strip-sky-cool {
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    #0A0518 0%,
+    #1B0E3A 28%,
+    #2A1538 52%,
+    #4B2452 72%,
+    #823548 88%,
+    #C04A4E 100%
+  );
+}
+
+.ss-strip-sky-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.10;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.5 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  pointer-events: none;
+}
+
+/* NIGHT CURTAIN — descends from top during scroll.
+   Default off-screen above so the rest frame is pure warm day. */
+.ss-strip-night {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(
+      180deg,
+      #050214 0%,
+      #0A0518 35%,
+      rgba(20, 12, 40, 0.85) 70%,
+      transparent 100%
+    );
+  transform: translateY(-100%);
+  will-change: transform;
+}
+
+/* STARS — fade in independently */
+.ss-strip-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.ss-strip-stars svg,
+.ss-strip-night svg {
+  width: 100%;
+  height: 60%;
+  display: block;
+}
+
+.ss-star {
+  animation: ss-twinkle 3.4s ease-in-out infinite;
+}
+
+@keyframes ss-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* SUN — anchored upper-right at rest (70% across, 25% down), small-to-medium */
+.ss-strip-sun-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ss-strip-sun {
+  position: absolute;
+  top: 25%;
+  left: 70%;
+  width: clamp(190px, 22vw, 320px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.ss-strip-sun svg { width: 100%; height: 100%; display: block; }
+
+.ss-sun-pulse {
+  transform-origin: center;
+  animation: ss-sun-breath 5.5s ease-in-out infinite;
+}
+
+@keyframes ss-sun-breath {
+  0%, 100% { transform: scale(1);    opacity: 0.6; }
+  50%      { transform: scale(1.08); opacity: 0.85; }
+}
+
+/* HORIZON FLARE — peak moment */
+.ss-strip-flare {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 56%;
+  height: 24%;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+  mix-blend-mode: screen;
+}
+
+.ss-strip-flare svg { width: 100%; height: 100%; display: block; }
+
+/* SEA + HORIZON LINE — water.webp masked at the top edge to blend into haze */
+.ss-strip-sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 62%;
+  bottom: 14%;
+  z-index: 6;
+  will-change: transform;
+}
+
+.ss-strip-sea-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 241, 184, 0.55) 30%,
+    rgba(255, 241, 184, 0.75) 50%,
+    rgba(255, 241, 184, 0.55) 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(255, 210, 63, 0.4);
+  z-index: 2;
+}
+
+.ss-strip-sea-water {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(220, 110, 90, 0.32) 0%,
+      rgba(140, 60, 90, 0.42) 55%,
+      rgba(40, 20, 50, 0.55) 100%
+    ),
+    url("/showcase/hero/water.webp") center top / cover no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 14%, black 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, black 14%, black 100%);
+}
+
+/* PALM PLANES — three depth tiers. Back uses a wide horizontal palm-row
+   scene as a single mask. Mid + front host individual palm slots, each
+   slot mask-imaging its own silhouette. Plane bg/color drives recolor. */
+.ss-palms {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Back: full-width palm-row scene, baked into one mask */
+.ss-palms-back {
+  height: 30%;
+  z-index: 7;
+  background: #3A2540;
+  opacity: 0.78;
+  filter: blur(0.4px);
+  -webkit-mask-image: url(/showcase/palms/palm-275894.svg);
+          mask-image: url(/showcase/palms/palm-275894.svg);
+  -webkit-mask-size: 100% auto;
+          mask-size: 100% auto;
+  -webkit-mask-position: bottom;
+          mask-position: bottom;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+
+.ss-palms-mid {
+  height: 52%;
+  z-index: 9;
+  color: #211230;
+}
+
+.ss-palms-front {
+  height: 86%;
+  z-index: 10;
+  color: #160B1F;
+}
+
+/* Per-palm slot — aspect-ratio set inline per file so contain-fit
+   doesn't distort. Slot fills plane height; width follows from aspect. */
+.ss-palm-slot {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+}
+
+.ss-palm-mask {
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  -webkit-mask-image: var(--palm-src);
+          mask-image: var(--palm-src);
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-position: bottom center;
+          mask-position: bottom center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+
+/* HAZE — warm horizontal band sitting just above the sea, in front of distant palms */
+.ss-strip-haze {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: 52%;
+  height: 14%;
+  z-index: 8;
+  pointer-events: none;
+  will-change: transform, opacity;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 175, 110, 0.30) 28%,
+    rgba(255, 200, 140, 0.42) 52%,
+    rgba(255, 175, 110, 0.28) 72%,
+    transparent 100%
+  );
+  filter: blur(9px);
+  mix-blend-mode: screen;
+}
+
+/* DUST MOTES — ambient sideways drift */
+.ss-strip-dust {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ss-dust-mote {
+  position: absolute;
+  top: var(--mote-top);
+  left: var(--mote-left);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 241, 184, 0.7);
+  box-shadow: 0 0 6px rgba(255, 210, 63, 0.5);
+  opacity: 0;
+  animation: ss-mote-drift var(--mote-dur) linear var(--mote-delay) infinite;
+}
+
+@keyframes ss-mote-drift {
+  0%   { transform: translate3d(-20px, 0, 0); opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.5; }
+  100% { transform: translate3d(120px, -16px, 0); opacity: 0; }
+}
+
+/* BOARDWALK — foreground band that slides out */
+.ss-strip-boardwalk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16%;
+  z-index: 11;
+  will-change: transform;
+}
+
+.ss-strip-board-sand {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(70, 35, 50, 0.55) 0%,
+      rgba(40, 20, 35, 0.85) 50%,
+      rgba(22, 11, 31, 1) 100%
+    );
+}
+
+.ss-strip-board-plank {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background:
+    linear-gradient(180deg,
+      rgba(40, 24, 18, 0.85) 0%,
+      rgba(22, 14, 12, 0.95) 100%
+    );
+  background-image:
+    linear-gradient(180deg,
+      rgba(40, 24, 18, 0.85) 0%,
+      rgba(22, 14, 12, 0.95) 100%
+    ),
+    repeating-linear-gradient(90deg,
+      transparent 0,
+      transparent 64px,
+      rgba(0, 0, 0, 0.5) 64px,
+      rgba(0, 0, 0, 0.5) 66px
+    );
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* NEON BULBS — flicker on left→right */
+.ss-strip-neon {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.ss-neon-bulb {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF8DC 0%, var(--ss-neon) 50%, transparent 80%);
+  box-shadow:
+    0 0 8px var(--ss-neon),
+    0 0 24px rgba(255, 210, 63, 0.7),
+    0 0 60px rgba(255, 107, 107, 0.4);
+  opacity: 0;
+  animation: ss-neon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes ss-neon-pulse {
+  0%, 100% { transform: scale(1);    filter: brightness(1); }
+  50%      { transform: scale(1.15); filter: brightness(1.4); }
+}
+
+/* "ASK THE STRIP" NEON SIGN — chat affordance */
+.ss-neon-ask {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  z-index: 13;
+  transform: translateX(-50%);
+  opacity: 0;
+  text-decoration: none;
+  color: var(--ss-neon);
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  will-change: opacity, transform;
+}
+
+.ss-neon-ask:hover {
+  transform: translateX(-50%) translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.ss-neon-ask-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1rem 1.6rem 0.9rem;
+  border: 2px solid var(--ss-neon);
+  border-radius: 12px;
+  background: rgba(20, 10, 30, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow:
+    inset 0 0 14px rgba(255, 210, 63, 0.30),
+    0 0 22px rgba(255, 210, 63, 0.55),
+    0 0 60px rgba(255, 107, 107, 0.30);
+}
+
+.ss-neon-ask-text {
+  font-weight: 800;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  letter-spacing: 0.18em;
+  color: var(--ss-neon);
+  text-shadow:
+    0 0 6px rgba(255, 255, 220, 0.8),
+    0 0 16px var(--ss-neon),
+    0 0 32px rgba(255, 107, 107, 0.5);
+  line-height: 1;
+}
+
+.ss-neon-ask-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ss-neon-2);
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+}
+
+/* INITIAL CTA — "scroll to enter the strip" */
+.ss-strip-cta {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  z-index: 14;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 241, 184, 0.78);
+  pointer-events: none;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  will-change: transform, opacity;
+}
+
+.ss-strip-cta-chev {
+  animation: ss-chev-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes ss-chev-bob {
+  0%, 100% { transform: translateY(0);   opacity: 0.6; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+
+/* HANDOFF GLOW — bleeds from below at tail end */
+.ss-strip-handoff {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36%;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% 100%,
+      rgba(255, 210, 63, 0.30) 0%,
+      rgba(255, 107, 107, 0.20) 35%,
+      transparent 75%
+    );
+  will-change: opacity;
+}
+
+/* ─────────────────────────────────────────── */
+/*           DASHBOARD (DARK + NEON)            */
+/* ─────────────────────────────────────────── */
+.ss-dashboard {
+  position: relative;
+  z-index: 5;
+  background: var(--ss-bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 142, 60, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 30%, rgba(255, 107, 107, 0.10) 0%, transparent 60%);
+  padding-top: clamp(2rem, 5vw, 4rem);
+}
+
+/* persistent palm header silhouette */
+.ss-palm-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  z-index: 60;
+  pointer-events: none;
+  color: #0F0518;
+  margin-bottom: -90px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* Header silhouette — same wide palm-row scene as the back plane, scaled small */
+.ss-palm-header .ss-palms-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+  background: #0F0518;
+  -webkit-mask-image: url(/showcase/palms/palm-275894.svg);
+          mask-image: url(/showcase/palms/palm-275894.svg);
+  -webkit-mask-size: 100% auto;
+          mask-size: 100% auto;
+  -webkit-mask-position: bottom;
+          mask-position: bottom;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+
+/* sticky dark nav */
+.ss-sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 70;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0.85rem clamp(1.25rem, 4vw, 3rem);
+  gap: 1rem;
+  background: rgba(22, 11, 31, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--ss-border);
+  color: var(--ss-ink);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.ss-sticky-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+.ss-sticky-sun {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF6CC 0%, var(--ss-neon) 70%);
+  box-shadow: 0 0 14px var(--ss-neon);
+}
+
+.ss-sticky-pills {
+  display: inline-flex;
+  background: rgba(255, 241, 184, 0.08);
+  border: 1px solid var(--ss-border);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+  justify-self: center;
+}
+
+.ss-sticky-pill {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ss-ink-2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s, background 0.18s;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ss-sticky-pill:hover { color: var(--ss-ink); }
+.ss-sticky-pill.is-active {
+  background: var(--ss-neon);
+  color: #160B1F;
+}
+
+.ss-sticky-cta {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--ss-neon);
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--ss-neon);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  text-shadow: 0 0 6px rgba(255, 210, 63, 0.5);
+  box-shadow: 0 0 12px rgba(255, 210, 63, 0.3), inset 0 0 8px rgba(255, 210, 63, 0.15);
+  transition: background 0.22s, color 0.22s, transform 0.22s;
+  min-height: 40px;
+}
+
+.ss-sticky-cta:hover {
+  background: var(--ss-neon);
+  color: #160B1F;
+  transform: translateY(-1px);
+}
+
+/* ── HEADLINE BAND ── */
+.ss-band {
+  position: relative;
+  z-index: 4;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.ss-band-eyebrow {
+  display: inline-block;
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.30em;
+  color: var(--ss-neon);
+  margin-bottom: 1.3rem;
+  text-shadow: 0 0 14px rgba(255, 210, 63, 0.4);
+}
+
+.ss-band-title {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--ss-ink);
+  margin: 0 0 2rem;
+}
+
+.ss-band-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--ss-neon) 0%, var(--ss-neon-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ss-band-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem 0.9rem 1rem;
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-border-strong);
+  border-radius: 16px;
+  text-decoration: none;
+  color: var(--ss-ink);
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.ss-band-next:hover {
+  transform: translateY(-2px);
+  border-color: var(--ss-neon);
+  box-shadow: 0 0 0 1px var(--ss-neon), 0 12px 30px -10px rgba(255, 210, 63, 0.35);
+}
+
+.ss-band-next-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  padding: 0.3rem 0.6rem;
+  background: var(--ss-neon);
+  color: #160B1F;
+  border-radius: 6px;
+}
+
+.ss-band-next-meta { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.ss-band-next-title { font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; color: var(--ss-ink); }
+.ss-band-next-sub { font-size: 0.78rem; color: var(--ss-ink-3); }
+.ss-band-next-cta { font-weight: 700; font-size: 0.85rem; color: var(--ss-neon); white-space: nowrap; }
+
+/* ── STATS ── */
+.ss-stats {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem) clamp(3rem, 5vw, 4rem);
+  gap: clamp(0.75rem, 1.5vw, 1.2rem);
+}
+
+@media (max-width: 720px) { .ss-stats { grid-template-columns: repeat(2, 1fr); } }
+
+.ss-stat-block {
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-border);
+  border-radius: 18px;
+  padding: 1.25rem 1.3rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: border-color 0.22s, box-shadow 0.22s;
+}
+
+.ss-stat-block:hover {
+  border-color: var(--ss-neon);
+  box-shadow: 0 0 0 1px var(--ss-neon), 0 12px 24px -12px rgba(255, 210, 63, 0.3);
+}
+
+.ss-stat-num {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--ss-neon);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 18px rgba(255, 210, 63, 0.25);
+}
+.ss-stat-num i { font-style: normal; color: var(--ss-neon-2); font-size: 0.75em; }
+
+.ss-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--ss-ink-3);
+  margin-top: 0.35rem;
+}
+
+/* ── SECTION + GRID ── */
+.ss-section {
+  position: relative;
+  z-index: 4;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.ss-section-head { text-align: center; margin-bottom: 2.5rem; }
+.ss-section-eyebrow {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.36em;
+  color: var(--ss-neon);
+  display: inline-block;
+  margin-bottom: 0.85rem;
+  text-shadow: 0 0 14px rgba(255, 210, 63, 0.4);
+}
+.ss-section-title {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--ss-ink);
+  margin: 0;
+}
+
+.ss-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+}
+@media (max-width: 1100px) { .ss-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 580px)  { .ss-grid { grid-template-columns: 1fr; } }
+
+.ss-card {
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.ss-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ss-neon);
+  box-shadow: 0 0 0 1px var(--ss-neon), 0 20px 40px -16px rgba(255, 210, 63, 0.30);
+}
+
+.ss-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ss-card-top {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: linear-gradient(135deg, #5C2A4E, #FF6B6B);
+}
+
+.ss-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ss-card:hover .ss-card-img { transform: scale(1.04); }
+
+.ss-card-top-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.20) 0%, transparent 40%, rgba(22, 11, 31, 0.85) 100%);
+}
+
+.ss-card-num {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.95rem;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: white;
+  background: rgba(22, 11, 31, 0.55);
+  padding: 0.28rem 0.55rem;
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ss-card-date {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 0.95rem;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--ss-neon);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.ss-card-body {
+  padding: 1.1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex: 1;
+}
+
+.ss-card-title {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--ss-ink);
+  margin: 0;
+}
+
+.ss-card-headliner {
+  font-size: 0.88rem;
+  color: var(--ss-ink-2);
+}
+.ss-card-headliner strong { color: var(--ss-ink); font-weight: 700; }
+
+.ss-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ss-ink-3);
+}
+
+.ss-card-bar { margin-top: 0.3rem; }
+.ss-card-bar-track {
+  height: 5px;
+  background: rgba(255, 241, 184, 0.10);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+.ss-card-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ss-neon), var(--ss-neon-2));
+  box-shadow: 0 0 8px rgba(255, 210, 63, 0.45);
+  transition: width 0.6s ease;
+}
+.ss-card-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ss-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.ss-bar-pct { color: var(--ss-ink); font-weight: 600; }
+
+.ss-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--ss-border);
+}
+.ss-card-price {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ss-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.ss-card-go {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--ss-neon);
+}
+
+/* ── CHAT — neon-rhymes with the sign in the strip ── */
+.ss-chat {
+  position: relative;
+  z-index: 4;
+  padding: 0 clamp(1.25rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.ss-chat-box {
+  position: relative;
+  background: var(--ss-surface);
+  border: 1.5px solid var(--ss-border-strong);
+  border-radius: 24px;
+  padding: clamp(2rem, 4vw, 2.8rem);
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 241, 184, 0.06);
+  overflow: hidden;
+}
+
+.ss-chat-box::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle at 80% 0%, rgba(255, 210, 63, 0.22) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.ss-chat-neon-frame {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.9rem 1.4rem 0.8rem;
+  border: 2px solid var(--ss-neon);
+  border-radius: 12px;
+  background: rgba(20, 10, 30, 0.5);
+  box-shadow:
+    inset 0 0 14px rgba(255, 210, 63, 0.25),
+    0 0 22px rgba(255, 210, 63, 0.40);
+  margin-bottom: 1.4rem;
+}
+
+.ss-chat-neon-text {
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+  letter-spacing: 0.18em;
+  color: var(--ss-neon);
+  text-shadow:
+    0 0 6px rgba(255, 255, 220, 0.7),
+    0 0 14px var(--ss-neon),
+    0 0 28px rgba(255, 107, 107, 0.45);
+  line-height: 1;
+}
+
+.ss-chat-neon-sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ss-neon-2);
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+}
+
+.ss-chat-body {
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ss-ink-2);
+  margin: 0 0 1.4rem;
+  max-width: 56ch;
+}
+
+.ss-chat-prompts {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ss-chat-prompt {
+  padding: 0.6rem 1rem;
+  background: rgba(255, 241, 184, 0.04);
+  border: 1.5px solid var(--ss-border);
+  color: var(--ss-ink-2);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  min-height: 36px;
+}
+.ss-chat-prompt:hover {
+  border-color: var(--ss-neon);
+  color: var(--ss-neon);
+  background: rgba(255, 210, 63, 0.06);
+}
+
+.ss-chat-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.95rem 1.6rem;
+  background: var(--ss-neon);
+  color: #160B1F;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  box-shadow: 0 0 32px rgba(255, 210, 63, 0.5), 0 12px 28px -10px rgba(255, 210, 63, 0.5);
+  transition: transform 0.22s ease;
+  min-height: 44px;
+}
+.ss-chat-cta:hover { transform: translateY(-1px); }
+
+/* ── MARQUEE ── */
+.ss-marquee {
+  position: relative;
+  z-index: 4;
+  background: #0D0517;
+  color: var(--ss-ink);
+  overflow: hidden;
+  border-top: 1px solid var(--ss-border);
+  border-bottom: 1px solid var(--ss-border);
+}
+
+.ss-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  padding: 0.7rem 0;
+  font-family: var(--font-sans-sunset), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.16em;
+  animation: ss-marquee 38s linear infinite;
+  will-change: transform;
+}
+
+.ss-marquee-item { display: inline-flex; align-items: center; padding: 0 1.4rem; }
+.ss-mq-star {
+  color: var(--ss-neon);
+  margin: 0 0.8rem;
+  text-shadow: 0 0 8px rgba(255, 210, 63, 0.6);
+}
+
+@keyframes ss-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── FOOTER ── */
+.ss-footer {
+  position: relative;
+  z-index: 4;
+  padding: 2rem clamp(1.25rem, 4vw, 3rem) 3rem;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ss-ink-4);
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.ss-root :focus-visible {
+  outline: 3px solid var(--ss-neon);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────── */
+/*                  RESPONSIVE                  */
+/* ─────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .ss-sticky-nav { grid-template-columns: 1fr auto; }
+  .ss-sticky-pills { display: none; }
+  .ss-strip-sun { width: clamp(220px, 60vw, 320px); }
+  .ss-neon-ask-text { letter-spacing: 0.14em; }
+  .ss-band { padding-top: clamp(3rem, 6vw, 5rem); }
+}
+
+/* ─────────────────────────────────────────── */
+/*           REDUCED MOTION FALLBACK            */
+/* ─────────────────────────────────────────── */
+/* Motion is currently gated OFF via MOTION_PASS_READY (see SunsetStrip.tsx)
+   — the rest frame is the default view for everyone. When the cinematic is
+   re-enabled, this block expands to snap reduced-motion users to the
+   ~40% timeline progress (held horizon-kiss peak):
+     - sky-cool opacity 0.7, warm 0.3
+     - sun at top:62% left:50% (kissing horizon center)
+     - flare bloomed, haze at peak warm intensity
+     - palms scaled 1.07-1.10, boardwalk 1.15 (mid push-in)
+     - night curtain translateY(-80%) — sliver visible at top
+     - strip neon lit (no flicker), ASK sign visible
+     - stars hidden, sticky-nav hidden, handoff at partial opacity */
+@media (prefers-reduced-motion: reduce) {
+  .ss-sun-pulse,
+  .ss-strip-cta-chev,
+  .ss-star,
+  .ss-dust-mote,
+  .ss-neon-bulb,
+  .ss-marquee-track    { animation: none !important; }
+}
