@@ -1,4 +1,5 @@
 "use client";
+import "./admin.css";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";

@@ -2,57 +2,77 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  FileText,
+  Users,
+  ImageIcon,
+  Mic2,
+  Check,
+} from "lucide-react";
 import { createEvent, getSingers } from "@/lib/admin-store";
+import FormSection from "@/components/admin/FormSection";
+import FormField from "@/components/admin/FormField";
+import TagInput from "@/components/admin/TagInput";
+import ImageInput from "@/components/admin/ImageInput";
+import AutoTextarea from "@/components/admin/AutoTextarea";
+import NumberStepper from "@/components/admin/NumberStepper";
+import DatePicker from "@/components/admin/DatePicker";
+import TimePicker from "@/components/admin/TimePicker";
+import SingerDropdown from "@/components/admin/SingerDropdown";
 import type { Singer } from "@/lib/types";
 
-const inputStyle: React.CSSProperties = {
+const inp: React.CSSProperties = {
   width: "100%",
   padding: "0.625rem 0.875rem",
-  borderRadius: "8px",
-  border: "1px solid var(--border-strong)",
+  borderRadius: "10px",
+  border: "1.5px solid var(--border-strong)",
   background: "var(--surface)",
   color: "var(--text)",
   fontSize: "0.875rem",
   outline: "none",
   boxSizing: "border-box",
+  transition: "border-color 0.15s, box-shadow 0.15s",
+  fontFamily: "inherit",
 };
 
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.8125rem",
-  fontWeight: 600,
-  color: "var(--text-2)",
-  marginBottom: "0.375rem",
-};
+const GRAD_STOPS = [
+  "#F97316,#FBBF24",
+  "#0D9488,#06B6D4",
+  "#7C3AED,#EC4899",
+  "#EA580C,#F59E0B",
+  "#059669,#10B981",
+  "#1D4ED8,#6366F1",
+  "#D97706,#C2410C",
+  "#E11D48,#F472B6",
+];
 
-const fieldStyle: React.CSSProperties = {
-  marginBottom: "1.25rem",
-};
+function singerGrad(id: string) {
+  const n = parseInt(id.replace(/\D/g, ""), 10);
+  return `linear-gradient(135deg, ${GRAD_STOPS[n % GRAD_STOPS.length]})`;
+}
+function initials(name: string) {
+  return name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+}
 
 export default function NewEventPage() {
   const router = useRouter();
   const [singers, setSingers] = useState<Singer[]>([]);
-  const [form, setForm] = useState({
-    title: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-    venueSection: "",
-    totalCapacity: "",
-    description: "",
-    coverImage: "",
-    tags: "",
-    headlinerId: "",
-  });
+
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("19:00");
+  const [endTime, setEndTime] = useState("23:00");
+  const [venueSection, setVenueSection] = useState("");
+  const [totalCapacity, setTotalCapacity] = useState(400);
+  const [description, setDescription] = useState("");
+  const [coverImage, setCoverImage] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [headlinerId, setHeadlinerId] = useState("");
   const [supportIds, setSupportIds] = useState<string[]>([]);
 
   useEffect(() => {
     setSingers(getSingers());
   }, []);
-
-  function set(k: keyof typeof form, v: string) {
-    setForm((f) => ({ ...f, [k]: v }));
-  }
 
   function toggleSupport(id: string) {
     setSupportIds((prev) =>
@@ -60,76 +80,99 @@ export default function NewEventPage() {
     );
   }
 
+  function handleHeadlinerChange(id: string) {
+    setHeadlinerId(id);
+    setSupportIds((prev) => prev.filter((s) => s !== id));
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.title.trim() || !form.date || !form.headlinerId) return;
+    if (!title.trim() || !date || !headlinerId) return;
 
     createEvent({
-      title: form.title.trim(),
-      date: form.date,
-      startTime: form.startTime,
-      endTime: form.endTime,
-      venueSection: form.venueSection.trim(),
-      totalCapacity: parseInt(form.totalCapacity) || 0,
-      description: form.description.trim(),
-      coverImage: form.coverImage.trim(),
-      tags: form.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      headlinerId: form.headlinerId,
+      title: title.trim(),
+      date,
+      startTime,
+      endTime,
+      venueSection: venueSection.trim(),
+      totalCapacity,
+      description: description.trim(),
+      coverImage: coverImage.trim(),
+      tags,
+      headlinerId,
       supportIds,
     });
 
     router.push("/admin/events");
   }
 
-  const supportCandidates = singers.filter((s) => s.id !== form.headlinerId);
+  const supportCandidates = singers.filter((s) => s.id !== headlinerId);
 
   return (
-    <div style={{ maxWidth: "640px" }}>
-      <h1
-        style={{
-          fontSize: "1.5rem",
-          fontWeight: 800,
-          color: "var(--text)",
-          letterSpacing: "-0.03em",
-          marginBottom: "1.75rem",
-        }}
-      >
-        Add Event
-      </h1>
+    <div style={{ maxWidth: "720px" }}>
+      <div style={{ marginBottom: "1.75rem" }}>
+        <Link
+          href="/admin/events"
+          style={{
+            fontSize: "0.8125rem",
+            color: "var(--text-4)",
+            textDecoration: "none",
+            fontWeight: 500,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            marginBottom: "0.625rem",
+          }}
+        >
+          ← Events
+        </Link>
+        <h1
+          style={{
+            fontSize: "1.75rem",
+            fontWeight: 800,
+            color: "var(--text)",
+            letterSpacing: "-0.04em",
+            margin: 0,
+          }}
+        >
+          Add Event
+        </h1>
+      </div>
 
-      <div
-        style={{
-          background: "var(--surface)",
-          borderRadius: "12px",
-          padding: "1.75rem",
-          boxShadow: "var(--tier-1)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Title *</label>
+      <form onSubmit={handleSubmit}>
+        {/* Details */}
+        <FormSection title="Details" icon={<FileText size={13} />}>
+          <FormField label="Title" required>
             <input
               required
-              style={inputStyle}
-              value={form.title}
-              onChange={(e) => set("title", e.target.value)}
-              placeholder="Event title"
+              className="admin-input"
+              style={inp}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Sunset Groove"
             />
-          </div>
+          </FormField>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Date *</label>
-            <input
-              required
-              type="date"
-              style={inputStyle}
-              value={form.date}
-              onChange={(e) => set("date", e.target.value)}
-            />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: "1rem",
+              alignItems: "end",
+              marginBottom: "1.25rem",
+            }}
+          >
+            <FormField label="Date" required style={{ marginBottom: 0 }}>
+              <DatePicker value={date} onChange={setDate} required />
+            </FormField>
+            <FormField label="Capacity" style={{ marginBottom: 0 }}>
+              <NumberStepper
+                value={totalCapacity}
+                onChange={setTotalCapacity}
+                min={0}
+                step={50}
+              />
+            </FormField>
           </div>
 
           <div
@@ -140,193 +183,215 @@ export default function NewEventPage() {
               marginBottom: "1.25rem",
             }}
           >
-            <div>
-              <label style={labelStyle}>Start Time</label>
-              <input
-                type="time"
-                style={inputStyle}
-                value={form.startTime}
-                onChange={(e) => set("startTime", e.target.value)}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>End Time</label>
-              <input
-                type="time"
-                style={inputStyle}
-                value={form.endTime}
-                onChange={(e) => set("endTime", e.target.value)}
-              />
-            </div>
+            <FormField label="Start Time" style={{ marginBottom: 0 }}>
+              <TimePicker value={startTime} onChange={setStartTime} />
+            </FormField>
+            <FormField label="End Time" style={{ marginBottom: 0 }}>
+              <TimePicker value={endTime} onChange={setEndTime} />
+            </FormField>
           </div>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Venue Section</label>
+          <FormField label="Venue Section" style={{ marginBottom: 0 }}>
             <input
-              style={inputStyle}
-              value={form.venueSection}
-              onChange={(e) => set("venueSection", e.target.value)}
-              placeholder="e.g. Main Stage"
+              className="admin-input"
+              style={inp}
+              value={venueSection}
+              onChange={(e) => setVenueSection(e.target.value)}
+              placeholder="e.g. Main Stage, Beach Terrace…"
             />
-          </div>
+          </FormField>
+        </FormSection>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Total Capacity</label>
-            <input
-              type="number"
-              min="0"
-              style={inputStyle}
-              value={form.totalCapacity}
-              onChange={(e) => set("totalCapacity", e.target.value)}
-              placeholder="500"
+        {/* Lineup */}
+        <FormSection title="Lineup" icon={<Mic2 size={13} />}>
+          <FormField label="Headliner" required>
+            <SingerDropdown
+              singers={singers}
+              value={headlinerId}
+              onChange={handleHeadlinerChange}
             />
-          </div>
+          </FormField>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Description</label>
-            <textarea
-              style={{ ...inputStyle, minHeight: "90px", resize: "vertical" }}
-              value={form.description}
-              onChange={(e) => set("description", e.target.value)}
-            />
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Cover Image URL</label>
-            <input
-              style={inputStyle}
-              value={form.coverImage}
-              onChange={(e) => set("coverImage", e.target.value)}
-              placeholder="/images/events/event-name.jpg"
-            />
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>
-              Tags{" "}
-              <span style={{ fontWeight: 400, color: "var(--text-4)" }}>
-                (comma-separated)
-              </span>
-            </label>
-            <input
-              style={inputStyle}
-              value={form.tags}
-              onChange={(e) => set("tags", e.target.value)}
-              placeholder="e.g. afrobeats, soul"
-            />
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Headliner *</label>
-            <select
-              required
-              style={{ ...inputStyle, cursor: "pointer" }}
-              value={form.headlinerId}
-              onChange={(e) => {
-                set("headlinerId", e.target.value);
-                setSupportIds((prev) =>
-                  prev.filter((id) => id !== e.target.value)
-                );
-              }}
-            >
-              <option value="">Select headliner…</option>
-              {singers.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Support Acts</label>
-            <div
-              style={{
-                border: "1px solid var(--border-strong)",
-                borderRadius: "8px",
-                padding: "0.75rem",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "0.5rem",
-                background: "var(--surface)",
-              }}
-            >
-              {supportCandidates.length === 0 ? (
-                <span style={{ fontSize: "0.8125rem", color: "var(--text-4)" }}>
-                  Select a headliner first to see support options.
-                </span>
-              ) : (
-                supportCandidates.map((s) => {
-                  const checked = supportIds.includes(s.id);
+          <FormField
+            label="Support Acts"
+            hint={
+              headlinerId
+                ? "Click to toggle"
+                : "Select a headliner first"
+            }
+            style={{ marginBottom: 0 }}
+          >
+            {supportCandidates.length === 0 && !headlinerId ? (
+              <div
+                style={{
+                  padding: "1rem",
+                  borderRadius: "10px",
+                  border: "1.5px dashed var(--border-strong)",
+                  textAlign: "center",
+                  color: "var(--text-4)",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Select a headliner to see support options
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+                  gap: "0.625rem",
+                }}
+              >
+                {supportCandidates.map((s) => {
+                  const on = supportIds.includes(s.id);
                   return (
-                    <label
+                    <button
                       key={s.id}
+                      type="button"
+                      onClick={() => toggleSupport(s.id)}
+                      className="support-pill"
                       style={{
-                        display: "inline-flex",
+                        display: "flex",
                         alignItems: "center",
-                        gap: "6px",
-                        padding: "4px 12px",
-                        borderRadius: "99px",
-                        border: `1px solid ${checked ? "var(--accent)" : "var(--border-strong)"}`,
-                        background: checked
+                        gap: "0.625rem",
+                        padding: "0.625rem 0.875rem",
+                        borderRadius: "10px",
+                        border: on
+                          ? "1.5px solid var(--accent)"
+                          : "1.5px solid var(--border-strong)",
+                        background: on
                           ? "var(--accent-tint)"
-                          : "transparent",
-                        color: checked ? "var(--accent)" : "var(--text-3)",
-                        fontSize: "0.8125rem",
-                        fontWeight: 500,
+                          : "var(--surface)",
                         cursor: "pointer",
-                        userSelect: "none",
+                        textAlign: "left",
+                        transition: "border-color 0.12s, background 0.12s",
+                        position: "relative",
                       }}
                     >
-                      <input
-                        type="checkbox"
-                        style={{ display: "none" }}
-                        checked={checked}
-                        onChange={() => toggleSupport(s.id)}
-                      />
-                      {s.name}
-                    </label>
+                      <div
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "50%",
+                          background: singerGrad(s.id),
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.625rem",
+                          fontWeight: 800,
+                          color: "#fff",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {initials(s.name)}
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "0.8125rem",
+                          fontWeight: 600,
+                          color: on ? "var(--accent)" : "var(--text-2)",
+                          flex: 1,
+                          minWidth: 0,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {s.name}
+                      </span>
+                      {on && (
+                        <div
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            borderRadius: "50%",
+                            background: "var(--accent)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Check size={9} color="#fff" strokeWidth={3} />
+                        </div>
+                      )}
+                    </button>
                   );
-                })
-              )}
-            </div>
-          </div>
+                })}
+              </div>
+            )}
+          </FormField>
+        </FormSection>
 
-          <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
-            <button
-              type="submit"
-              style={{
-                padding: "0.625rem 1.5rem",
-                borderRadius: "8px",
-                background: "var(--accent)",
-                color: "#fff",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Create Event
-            </button>
-            <Link
-              href="/admin/events"
-              style={{
-                padding: "0.625rem 1.25rem",
-                borderRadius: "8px",
-                border: "1px solid var(--border-strong)",
-                color: "var(--text-2)",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              Cancel
-            </Link>
-          </div>
-        </form>
-      </div>
+        {/* Media & Content */}
+        <FormSection title="Media & Content" icon={<ImageIcon size={13} />}>
+          <FormField label="Description">
+            <AutoTextarea
+              value={description}
+              onChange={setDescription}
+              placeholder="Describe the event vibe, artists, and experience…"
+              minRows={3}
+              maxLength={800}
+            />
+          </FormField>
+
+          <FormField
+            label="Cover Image"
+            hint="Enter a URL to see a live preview"
+          >
+            <ImageInput
+              value={coverImage}
+              onChange={setCoverImage}
+              aspect="wide"
+              placeholder="/images/events/event-name.jpg"
+              fallbackLabel={title ? title.split(" ")[0] : undefined}
+            />
+          </FormField>
+
+          <FormField label="Tags" hint="Press Enter or comma to add" style={{ marginBottom: 0 }}>
+            <TagInput
+              value={tags}
+              onChange={setTags}
+              placeholder="e.g. afrobeats, soul, sunset…"
+            />
+          </FormField>
+        </FormSection>
+
+        {/* Actions */}
+        <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.5rem" }}>
+          <button
+            type="submit"
+            style={{
+              padding: "0.75rem 2rem",
+              borderRadius: "10px",
+              background: "var(--accent)",
+              color: "#fff",
+              fontSize: "0.9375rem",
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Create Event
+          </button>
+          <Link
+            href="/admin/events"
+            style={{
+              padding: "0.75rem 1.5rem",
+              borderRadius: "10px",
+              border: "1.5px solid var(--border-strong)",
+              color: "var(--text-3)",
+              fontSize: "0.9375rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
+            Cancel
+          </Link>
+        </div>
+      </form>
     </div>
   );
 }

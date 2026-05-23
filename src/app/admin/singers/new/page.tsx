@@ -2,64 +2,53 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { User, Music2, ImageIcon, Share2 } from "lucide-react";
 import { createSinger } from "@/lib/admin-store";
+import FormSection from "@/components/admin/FormSection";
+import FormField from "@/components/admin/FormField";
+import TagInput from "@/components/admin/TagInput";
+import ImageInput from "@/components/admin/ImageInput";
+import AutoTextarea from "@/components/admin/AutoTextarea";
 
-const inputStyle: React.CSSProperties = {
+const inp: React.CSSProperties = {
   width: "100%",
   padding: "0.625rem 0.875rem",
-  borderRadius: "8px",
-  border: "1px solid var(--border-strong)",
+  borderRadius: "10px",
+  border: "1.5px solid var(--border-strong)",
   background: "var(--surface)",
   color: "var(--text)",
   fontSize: "0.875rem",
   outline: "none",
   boxSizing: "border-box",
-};
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.8125rem",
-  fontWeight: 600,
-  color: "var(--text-2)",
-  marginBottom: "0.375rem",
-};
-
-const fieldStyle: React.CSSProperties = {
-  marginBottom: "1.25rem",
+  transition: "border-color 0.15s, box-shadow 0.15s",
+  fontFamily: "inherit",
 };
 
 export default function NewSingerPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    nationality: "",
-    genre: "",
-    bio: "",
-    photo: "",
-    instagram: "",
-    spotify: "",
-  });
-
-  function set(k: keyof typeof form, v: string) {
-    setForm((f) => ({ ...f, [k]: v }));
-  }
+  const [name, setName] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [genres, setGenres] = useState<string[]>([]);
+  const [bio, setBio] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [spotify, setSpotify] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.name.trim()) return;
+    if (!name.trim()) return;
 
     createSinger({
-      name: form.name.trim(),
-      nationality: form.nationality.trim(),
-      genre: form.genre
-        .split(",")
-        .map((g) => g.trim())
-        .filter(Boolean),
-      bio: form.bio.trim(),
-      photo: form.photo.trim() || `/images/singers/${form.name.toLowerCase().replace(/\s+/g, "-")}.jpg`,
+      name: name.trim(),
+      nationality: nationality.trim(),
+      genre: genres,
+      bio: bio.trim(),
+      photo:
+        photo.trim() ||
+        `/images/singers/${name.trim().toLowerCase().replace(/\s+/g, "-")}.jpg`,
       socialLinks: {
-        instagram: form.instagram.trim() || undefined,
-        spotify: form.spotify.trim() || undefined,
+        instagram: instagram.trim() || undefined,
+        spotify: spotify.trim() || undefined,
       },
     });
 
@@ -67,148 +56,188 @@ export default function NewSingerPage() {
   }
 
   return (
-    <div style={{ maxWidth: "600px" }}>
-      <h1
-        style={{
-          fontSize: "1.5rem",
-          fontWeight: 800,
-          color: "var(--text)",
-          letterSpacing: "-0.03em",
-          marginBottom: "1.75rem",
-        }}
-      >
-        Add Singer
-      </h1>
+    <div style={{ maxWidth: "680px" }}>
+      {/* Header */}
+      <div style={{ marginBottom: "1.75rem" }}>
+        <Link
+          href="/admin/singers"
+          style={{
+            fontSize: "0.8125rem",
+            color: "var(--text-4)",
+            textDecoration: "none",
+            fontWeight: 500,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            marginBottom: "0.625rem",
+          }}
+        >
+          ← Singers
+        </Link>
+        <h1
+          style={{
+            fontSize: "1.75rem",
+            fontWeight: 800,
+            color: "var(--text)",
+            letterSpacing: "-0.04em",
+            margin: 0,
+          }}
+        >
+          Add Singer
+        </h1>
+      </div>
 
-      <div
-        style={{
-          background: "var(--surface)",
-          borderRadius: "12px",
-          padding: "1.75rem",
-          boxShadow: "var(--tier-1)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Name *</label>
+      <form onSubmit={handleSubmit}>
+        {/* Identity */}
+        <FormSection title="Identity" icon={<User size={13} />}>
+          <FormField label="Name" required>
             <input
               required
-              style={inputStyle}
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              placeholder="Artist name"
+              className="admin-input"
+              style={inp}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Artist or stage name"
             />
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Nationality</label>
+          </FormField>
+          <FormField label="Nationality" style={{ marginBottom: 0 }}>
             <input
-              style={inputStyle}
-              value={form.nationality}
-              onChange={(e) => set("nationality", e.target.value)}
-              placeholder="e.g. Senegalese"
+              className="admin-input"
+              style={inp}
+              value={nationality}
+              onChange={(e) => setNationality(e.target.value)}
+              placeholder="e.g. Senegalese, Colombian…"
             />
-          </div>
+          </FormField>
+        </FormSection>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>
-              Genre{" "}
-              <span style={{ fontWeight: 400, color: "var(--text-4)" }}>
-                (comma-separated)
-              </span>
-            </label>
-            <input
-              style={inputStyle}
-              value={form.genre}
-              onChange={(e) => set("genre", e.target.value)}
-              placeholder="e.g. Afrobeats, Soul"
+        {/* Music */}
+        <FormSection title="Music" icon={<Music2 size={13} />}>
+          <FormField
+            label="Genres"
+            hint="Type a genre and press Enter or comma to add"
+          >
+            <TagInput
+              value={genres}
+              onChange={setGenres}
+              placeholder="e.g. Afrobeats, Soul, Reggae…"
             />
-          </div>
-
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Bio</label>
-            <textarea
-              style={{ ...inputStyle, minHeight: "100px", resize: "vertical" }}
-              value={form.bio}
-              onChange={(e) => set("bio", e.target.value)}
-              placeholder="Short artist biography"
+          </FormField>
+          <FormField label="Bio" hint="A short artist biography" style={{ marginBottom: 0 }}>
+            <AutoTextarea
+              value={bio}
+              onChange={setBio}
+              placeholder="Describe the artist's style, background, and highlights…"
+              minRows={4}
+              maxLength={600}
             />
-          </div>
+          </FormField>
+        </FormSection>
 
-          <div style={fieldStyle}>
-            <label style={labelStyle}>Photo URL</label>
-            <input
-              style={inputStyle}
-              value={form.photo}
-              onChange={(e) => set("photo", e.target.value)}
-              placeholder="/images/singers/name.jpg"
+        {/* Media */}
+        <FormSection title="Photo" icon={<ImageIcon size={13} />}>
+          <FormField label="Artist Photo" hint="Enter a URL to see a live preview" style={{ marginBottom: 0 }}>
+            <ImageInput
+              value={photo}
+              onChange={setPhoto}
+              aspect="square"
+              placeholder="/images/singers/artist-name.jpg"
+              fallbackLabel={
+                name
+                  ? name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase()
+                  : "?"
+              }
             />
-          </div>
+          </FormField>
+        </FormSection>
 
+        {/* Social */}
+        <FormSection title="Social Links" icon={<Share2 size={13} />}>
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: "1rem",
-              marginBottom: "1.25rem",
             }}
           >
-            <div>
-              <label style={labelStyle}>Instagram</label>
+            <FormField label="Instagram" style={{ marginBottom: 0 }}>
+              <div style={{ position: "relative" }}>
+                <span
+                  style={{
+                    position: "absolute",
+                    left: "0.875rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    fontSize: "0.875rem",
+                    color: "var(--text-4)",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                  }}
+                >
+                  @
+                </span>
+                <input
+                  className="admin-input"
+                  style={{ ...inp, paddingLeft: "1.75rem" }}
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="handle"
+                />
+              </div>
+            </FormField>
+            <FormField label="Spotify" style={{ marginBottom: 0 }}>
               <input
-                style={inputStyle}
-                value={form.instagram}
-                onChange={(e) => set("instagram", e.target.value)}
-                placeholder="@handle"
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Spotify</label>
-              <input
-                style={inputStyle}
-                value={form.spotify}
-                onChange={(e) => set("spotify", e.target.value)}
+                className="admin-input"
+                style={inp}
+                value={spotify}
+                onChange={(e) => setSpotify(e.target.value)}
                 placeholder="artist-slug"
               />
-            </div>
+            </FormField>
           </div>
+        </FormSection>
 
-          <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
-            <button
-              type="submit"
-              style={{
-                padding: "0.625rem 1.5rem",
-                borderRadius: "8px",
-                background: "var(--accent)",
-                color: "#fff",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Create Singer
-            </button>
-            <Link
-              href="/admin/singers"
-              style={{
-                padding: "0.625rem 1.25rem",
-                borderRadius: "8px",
-                border: "1px solid var(--border-strong)",
-                color: "var(--text-2)",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              Cancel
-            </Link>
-          </div>
-        </form>
-      </div>
+        {/* Actions */}
+        <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.5rem" }}>
+          <button
+            type="submit"
+            style={{
+              padding: "0.75rem 2rem",
+              borderRadius: "10px",
+              background: "var(--accent)",
+              color: "#fff",
+              fontSize: "0.9375rem",
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Create Singer
+          </button>
+          <Link
+            href="/admin/singers"
+            style={{
+              padding: "0.75rem 1.5rem",
+              borderRadius: "10px",
+              border: "1.5px solid var(--border-strong)",
+              color: "var(--text-3)",
+              fontSize: "0.9375rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
+            Cancel
+          </Link>
+        </div>
+      </form>
     </div>
   );
 }

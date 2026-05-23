@@ -1,0 +1,74 @@
+/* Focus rings */
+.admin-input:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+/* Remove number spinners globally in admin */
+input[type="number"].no-spinner::-webkit-inner-spin-button,
+input[type="number"].no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].no-spinner {
+  -moz-appearance: textfield;
+}
+
+/* Calendar days */
+.cal-day:hover {
+  background: var(--surface-2) !important;
+}
+.cal-day-selected {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+.cal-day-today {
+  background: var(--accent-tint) !important;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+.cal-day-selected.cal-day-today {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* Dropdown option hover */
+.dd-option:hover {
+  background: var(--surface-2) !important;
+}
+.dd-option-active {
+  background: var(--accent-tint) !important;
+}
+
+/* Spinner buttons (TimePicker) */
+.spin-btn {
+  transition: background 0.1s, color 0.1s;
+}
+.spin-btn:hover {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+}
+
+/* Stepper side buttons */
+.stepper-btn:hover:not(:disabled) {
+  background: var(--surface-3) !important;
+}
+
+/* Support pill hover */
+.support-pill:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Auto textarea */
+.auto-textarea {
+  resize: none;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.auto-textarea:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
