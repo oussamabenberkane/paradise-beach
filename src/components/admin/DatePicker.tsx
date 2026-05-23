@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
 const MONTHS = [
@@ -31,17 +32,30 @@ export default function DatePicker({
   const [viewMonth, setViewMonth] = useState(
     selected?.getMonth() ?? today.getMonth()
   );
-  const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0, width: 0 });
 
   useEffect(() => {
     function onDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      const target = e.target as Node;
+      const inTrigger = triggerRef.current?.contains(target);
+      const inPopover = popoverRef.current?.contains(target);
+      if (!inTrigger && !inPopover) setOpen(false);
     }
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPopoverPos({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX,
+      width: Math.max(rect.width, 288),
+    });
+  }, [open]);
 
   function daysInMonth(y: number, m: number) {
     return new Date(y, m + 1, 0).getDate();
@@ -89,7 +103,7 @@ export default function DatePicker({
     : "";
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={triggerRef} style={{ position: "relative" }}>
       {/* Trigger */}
       <div
         onClick={() => setOpen((o) => !o)}
@@ -125,20 +139,21 @@ export default function DatePicker({
         </span>
       </div>
 
-      {/* Popover */}
-      {open && (
+      {/* Popover — rendered in a portal so it escapes overflow:hidden parents */}
+      {open && typeof document !== "undefined" && createPortal(
         <div
+          ref={popoverRef}
           style={{
             position: "absolute",
-            top: "calc(100% + 8px)",
-            left: 0,
-            zIndex: 200,
+            top: popoverPos.top,
+            left: popoverPos.left,
+            width: "288px",
+            zIndex: 9999,
             background: "var(--surface)",
             borderRadius: "16px",
             boxShadow: "var(--tier-3)",
             border: "1px solid var(--border)",
             padding: "1.125rem",
-            width: "288px",
           }}
         >
           {/* Month nav */}
@@ -276,7 +291,8 @@ export default function DatePicker({
               );
             })}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
